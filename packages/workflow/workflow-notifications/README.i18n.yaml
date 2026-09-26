@@ -1,0 +1,37 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write packages/workflow/workflow-notifications/README.md
+/:
+  en: b835165e1f4959d9
+  zh: e8909f236eb9ada3
+/deepseek-ai-dsh-workflow-notifications:
+  en: 0be7ff42336244c8
+  zh: 9b03bfb38a962e71
+/deepseek-ai-dsh-workflow-notifications/summary:
+  en: 71cfd8f4f0418d41
+  zh: e330ecedea1ccbfa
+/deepseek-ai-dsh-workflow-notifications/table-of-contents:
+  en: 9be40445baed505c
+  zh: f94cf4a6add0a457
+/deepseek-ai-dsh-workflow-notifications/use-this-package:
+  en: e25c69552c68d730
+  zh: ae48b74ea3e241a0
+/deepseek-ai-dsh-workflow-notifications/understand-the-implementation:
+  en: d3e91bf19d7e89a4
+  zh: 7eb7a11de78bc7d6
+/deepseek-ai-dsh-workflow-notifications/understand-the-implementation/source-map:
+  en: f53c6f88983b2ce1
+  zh: fcfe430916626599
+/deepseek-ai-dsh-workflow-notifications/model-experience:
+  en: 0a86f65003a8c24d
+  zh: 1290c21d23bebacb
+/deepseek-ai-dsh-workflow-notifications/model-experience/kv-cache-effect:
+  en: 0633913be32bf646
+  zh: 3cceeeb4b70632f4
+/deepseek-ai-dsh-workflow-notifications/known-limitations-and-deferred-work:
+  en: 05fb02f523ad06d9
+  zh: 6c0b3b63f21a2f16
+/deepseek-ai-dsh-workflow-notifications/known-limitations-and-deferred-work/dev-note:
+  en: e67f633dc6fe7773
+  zh: 8ec3e73528ddb1a6

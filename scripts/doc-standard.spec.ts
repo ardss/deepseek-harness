@@ -342,7 +342,8 @@ describe('dsh-doc skill consolidation', () => {
     }
   })
 
-  it('maps package README kinds to their documentation standards', () => {
+  // 全量读取 370+ 个 README（含 frontmatter），在 run-gates 并行负载下会超出默认 5 秒。
+  it('maps package README kinds to their documentation standards', { timeout: 60_000 }, () => {
     const files = packageReadmes()
     expect(files.length).toBeGreaterThan(0)
 

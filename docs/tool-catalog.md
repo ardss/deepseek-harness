@@ -25,6 +25,7 @@ This table connects model-visible tool names to the plugin package and service s
 | `@deepseek-ai/dsh-tool-present` | `present` | `ctx.tools`, `ctx.fs`, `ctx.sessionProjections` | `tool/call`, `deliverables/presented after a successful final result`, `tool/result` | - | Deliveries belong to the calling Session; Web ui-deliverables supplies source-file opening and cards. |
 | `@deepseek-ai/dsh-tool-pwsh` | `pwsh` | `ctx.tools`, `ctx.shell`, `ctx.systemPrompt`, `ctx.shellEnv`, `ctx.jobs for run_in_background and the job-backed foreground path` | `tool/call`, `tool/result` | - | The pwsh tool is the PowerShell-dialect consumer of the bash executor seam for Windows compositions (a PowerShell executor such as `@deepseek-ai/dsh-pwsh-local` backs `ctx.shell`); it mirrors the bash tool call-for-call minus sandbox controls — `run_in_background` runs register with the generic `ctx.jobs` runtime and are collected/stopped through the `job_*` tools, and the managed `DSH_*` environment comes from `@deepseek-ai/dsh-shell-env`. Each call runs in a fresh process (no persistent PTY session), with native `C:\...` paths and `$env:NAME` variables. |
 | `@deepseek-ai/dsh-tool-cordis` | `cordis_inspect_list`, `cordis_inspect_query` | `ctx.tools`, `ctx.cordisInspect` | `tool/call`, `tool/result` | - | Creator mode provides two read-only runtime inspection tools. The Cordis host runner supplies the inspection registry; Client queries require a connected page. Author persistent changes as bundles and install them with plugin_manager. |
+| `@deepseek-ai/dsh-tool-dynamic-workflow` | `AmendWorkflow`, `CreateWorkflow`, `EvalWorkflowSnippet`, `GetWorkflowRun`, `ListModels`, `ListSavedWorkflows`, `ListWorkflowRuns`, `ResolveWorkflowQuestion`, `ResumeWorkflowRun`, `SaveWorkflow` | `ctx.tools`, `ctx.systemPrompt`, `optional dynamic-workflow run/escalation ports (absent ports yield placeholder responses)` | `tool/call`, `tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-bash-persistent` | `bash` | `ctx.tools`, `ctx.terminals`, `an owning Agent at execution time` | `tool/call`, `PTY shell state`, `tool/result` | - | One owner-isolated persistent bash tool; deployment composition supplies the PTY backend and may override the model-facing environment description. |
 | `@deepseek-ai/dsh-tool-pwsh-persistent` | `pwsh` | `ctx.tools`, `ctx.terminals`, `an owning Agent at execution time` | `tool/call`, `PTY shell state`, `tool/result` | - | One owner-isolated persistent pwsh tool, the Windows counterpart of the persistent bash tool; deployment composition supplies a pwsh-dialect PTY backend and may override the model-facing environment description. |
 | `@deepseek-ai/dsh-tool-str-replace-editor` | `str_replace_editor` | `ctx.tools`, `ctx.fs` | `tool/call`, `fs/observed after view presence/absence, edit absence, or successful mutation`, `tool/result` | - | Standalone view/create/unique literal replace/line insert tool over the filesystem seam; it composes with any shell or terminal API. |
@@ -781,6 +782,403 @@ Source: [`packages/extensions/tool-cordis/src/index.ts`](../packages/extensions/
 
 Creator mode provides two read-only runtime inspection tools. The Cordis host runner supplies the inspection registry; Client queries require a connected page. Author persistent changes as bundles and install them with plugin_manager.
 
+<a id="deepseek-aidsh-tool-dynamic-workflow"></a>
+
+## `@deepseek-ai/dsh-tool-dynamic-workflow`
+
+### `AmendWorkflow`
+
+Amend an existing dynamic-workflow run with a revised script or revised settings. Starts a NEW run that supersedes the old one and imports its finished work as a cache, so only what you changed is paid for again. Works on ANY run of this project: completed, errored, stopped — or still running.
+
+When to use:
+
+- The run errored, or completed but needs one more stage: fix or extend the script and amend. Never rewrite the workflow from scratch with CreateWorkflow.
+
+- The run is STILL RUNNING and is visibly going wrong: amend it NOW, in one call. Do not job_kill it first and do not wait for it to finish — this tool stops the running predecessor and starts the revision; the earlier you amend, the less is re-paid.
+
+- The user wants the same workflow with fewer subagents at once, its subagents on another model, or another name: amend with only that field and neither `path` nor `script`.
+
+- To continue a stopped run unchanged, use ResumeWorkflowRun instead.
+
+Load the `dynamic-workflows` skill with the `skill` tool before revising a script: it carries the cache rules, what each omitted field keeps, and the confirmation rule. A call that passes `path` or `script` is refused until that skill has been loaded in this session; a settings-only call is not. Pass `path` (the run's script file, edited in place — the usual form) or `script` (the whole revised script inline), never both.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "The run to amend — from CreateWorkflow/AmendWorkflow results, a notification, GetWorkflowRun or ListWorkflowRuns."
+    },
+    "script": {
+      "type": "string",
+      "description": "The whole revised script inline."
+    },
+    "path": {
+      "type": "string",
+      "description": "The run's script file, edited in place (the usual form)."
+    },
+    "max_concurrency": {
+      "type": "integer",
+      "description": "Revised concurrent-subagent cap."
+    },
+    "subagent_model": {
+      "type": "string",
+      "description": "Revised subagent model selection."
+    },
+    "name": {
+      "type": "string",
+      "description": "Revised display name."
+    }
+  },
+  "required": [
+    "run_id"
+  ]
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `CreateWorkflow`
+
+Create and run a dynamic workflow: a TypeScript script that orchestrates multiple model-driven
+
+subagents with plain control flow (loops, conditionals, fan-out) and typed intermediate results.
+
+The script is typechecked, the user is asked to confirm it, and the run starts in the background;
+
+you are notified with its final result when it settles. Compilation errors come back as diagnostics.
+
+When to use:
+
+- The user explicitly asks for a workflow — "use a workflow", "with a workflow", "使用 workflow",
+
+"用工作流", or any phrasing that names workflow/工作流 as the means: this tool is mandatory.
+
+Do not substitute the subagent delegation tools, do not do the work inline yourself, and do not
+
+judge the task too small for a workflow — the user chose the tool, and that choice is theirs.
+
+Size only decides how many subagents the script gets, never whether it is written.
+
+- Without such an explicit request, do not start a workflow: delegate with the subagent tools or do
+
+the work yourself, even for multi-step or multi-subagent tasks.
+
+Before writing or revising a script, load the `dynamic-workflows` skill with the `skill` tool: it
+
+carries the facade declarations the script is checked against, the authoring rules, and this
+
+tool's full contract. A call that submits a script is refused until that skill has been loaded
+
+in this session; running a saved workflow by name is exempt.
+
+Pass exactly one source: `script` (a one-off script written inline; it is saved to a draft file
+
+the result names — revise that file and resubmit with `path`, never paste the script again),
+
+`saved` (a workflow saved in this project or globally, by name; check ListSavedWorkflows before
+
+writing one from scratch), or `path` (a script file on disk, normally the file a previous result
+
+named). To change a run that already exists — errored, completed, stopped or still running —
+
+call AmendWorkflow instead of starting over.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "script": {
+      "type": "string",
+      "description": "A one-off script written inline; it is saved to a draft file the result names."
+    },
+    "saved": {
+      "type": "object",
+      "description": "Run a workflow saved in this project or globally. Fields: name (required), args (optional JSON input).",
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The saved workflow name."
+        },
+        "args": {
+          "description": "Optional JSON input persisted with the saved definition."
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "path": {
+      "type": "string",
+      "description": "A script file on disk (normally the draft a previous result named); submitted without re-pasting the script."
+    },
+    "name": {
+      "type": "string",
+      "description": "Optional display name; falls back to the first phase name."
+    },
+    "args": {
+      "description": "JSON input exposed to the script as `args` (top-level `path` source only)."
+    },
+    "max_concurrency": {
+      "type": "integer",
+      "description": "Optional cap on concurrently running subagents."
+    },
+    "subagent_model": {
+      "type": "string",
+      "description": "Optional subagent model selection; check ListModels for valid values."
+    },
+    "script_line_offset": {
+      "type": "integer",
+      "description": "Line offset between inline script text and the draft file (metadata block present)."
+    }
+  }
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `EvalWorkflowSnippet`
+
+Compile and run a small dynamic-workflow TypeScript snippet synchronously, against the same compiler, sandbox and world-read execution path a real run uses. It is the test bench for workflow authoring: check a parser against real command output, see what a glob actually returns, or exercise a gate predicate on real repository state before putting it in a CreateWorkflow script. No agent()/report(); nothing persists; the result comes back in this call.
+
+Load the `dynamic-workflows` skill with the `skill` tool first: it carries the snippet facade and the rules. The call is refused until that skill has been loaded in this session. Pass `code` (inline) or `path` (a file holding the snippet), never both.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "The snippet, inline."
+    },
+    "path": {
+      "type": "string",
+      "description": "A file holding the snippet."
+    }
+  }
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `GetWorkflowRun`
+
+Returns the current state of one dynamic-workflow run: progress, token usage and the tail of its log() narration while it runs; the final result once it completed; the structured failure if it errored or was stopped.
+
+Runs this session starts settle on their own: you receive a completion notification carrying the final output. Do NOT poll this tool while waiting for one — continue with other work.
+
+Reach for it when: (a) the user asks how a workflow is going, (b) you want to review this project's earlier runs, including ones other sessions started, (c) a completion notification was truncated and you need the run's full record by ID.
+
+- Takes run_id — from CreateWorkflow's or AmendWorkflow's result, from a completion notification, or from ListWorkflowRuns.
+
+- This is an instant snapshot and never waits. To block until a run THIS session started finishes, use job_output with wait instead: that is the waiting tool. GetWorkflowRun is the right tool when you must not wait, or when the run belongs to another session (a waiting job_output cannot see those).
+
+- The `artifacts` section lists what the run published for the user — files, documents and live dashboards that are ALREADY shown to them as cards. Refer to one by its title; do not paste its contents back. The one marked `primary` is the deliverable: point the user to it first.
+
+- Three terminal states: `completed`; `errored` (the script itself failed — not resumable, amend it); `stopped` with a stop reason — `user` (cancelled on purpose: resume only when the user asks), `model` (your own job_kill), `provider` (a provider-side error stopped it: the `<error>` block names the cause and the fix; resolve it with the user, then resume), `interrupted` (the process that owned the run exited — continuing it is usually what the user wants), `superseded` (an AmendWorkflow replaced it; `<superseded_by>` names the successor — read that run instead, never resume this one).
+
+- A stopped run (other than a superseded one) can be continued with ResumeWorkflowRun — no rebuild needed, same run ID, same script.
+
+- ANY run — completed, stopped, errored, or still running — can instead be revised with AmendWorkflow: pass its run ID and the corrected script, and the finished work is imported as cache. When the script itself errored, that is the move — fix the script and keep the work that already succeeded, rather than rewriting from scratch.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "The workflow run ID."
+    }
+  },
+  "required": [
+    "run_id"
+  ]
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ListModels`
+
+Lists the models this host has configured, so a dynamic workflow's subagents can be pointed at one.
+
+- Each row's `id` (`providerId/modelId`) pastes verbatim into CreateWorkflow's or AmendWorkflow's `subagent_model`.
+
+- This tool does NOT change the model you are running on. The session model is the user's choice and only the user changes it; `subagent_model` only moves the workflow's subagents.
+
+- The model the session is on right now is marked `[current]` — setting the subagents to that one is the same as omitting the field.
+
+- A row marked `disabled` cannot be used (no API key, disabled by policy). Resolve that with the user rather than picking around it silently.
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ListSavedWorkflows`
+
+Lists the dynamic-workflow DEFINITIONS saved in this project (`<cwd>`/.dsh/workflows/, keyed on the working directory) and the global archive (~/.dsh/workflows). These are workflow DEFINITIONS you can run, not past runs — for the run history use ListWorkflowRuns instead. `invalid` lists saved files that could not be read (usually a hand-edited metadata block). They are named so they can be fixed, not silently skipped.
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ListWorkflowRuns`
+
+Lists this project's dynamic-workflow runs (the session's working directory is the project key), most recently updated first. Includes runs started by other sessions — the run journal is per-project, not per-session.
+
+Runs this session starts settle on their own: you receive a completion notification carrying the final output. Do NOT poll this tool while waiting for one — continue with other work.
+
+Reach for it when: (a) the user asks how a workflow is going, (b) you want to review this project's earlier runs, including ones other sessions started, (c) a completion notification was truncated and you need the run's full record by ID.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "description": "Optional status filter.",
+      "enum": [
+        "running",
+        "pending",
+        "completed",
+        "errored",
+        "stopped"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "description": "Maximum rows (1-50, default 20)."
+    }
+  }
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ResolveWorkflowQuestion`
+
+Answers a blocking question that a subagent escalated from inside a RUNNING dynamic-workflow run.
+
+- Takes question_id — the ID from the escalation notification (it looks like `dwfq-...`). If that notification was lost, GetWorkflowRun lists the questions a run still owes an answer to.
+
+- The run keeps running the whole time: only the subagent that asked is parked on its call, while every other subagent and the script's control flow keep going. Your answer becomes that call's result verbatim and the subagent continues from there.
+
+- Answer directly and actionably. If you are not sure, look at the run first with GetWorkflowRun, or ask the user with ask_user_question, then come back and answer — nothing answers on your behalf, and the subagent waits indefinitely.
+
+- If the question reveals the SCRIPT is structurally broken (a broken gate, wrong control flow), a sentence cannot fix that: cancel the run and continue with a revised script via AmendWorkflow.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "question_id": {
+      "type": "string",
+      "description": "The ID from the escalation notification (it looks like `dwfq-...`)."
+    },
+    "answer": {
+      "type": "string",
+      "description": "The answer; becomes the parked call's result verbatim."
+    }
+  },
+  "required": [
+    "question_id",
+    "answer"
+  ]
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ResumeWorkflowRun`
+
+Resumes a dynamic-workflow run whose status is `stopped` — the user cancelled it, you stopped it with job_kill, a provider-side error stopped it (expired sign-in, model not in the plan, quota cap), or the process that owned it exited (`interrupted`). The run continues under the same run ID: finished steps are replayed from the journal without spending tokens, unfinished steps are dispatched again. The one stopped run that is NOT resumable is a `superseded` one: an AmendWorkflow replaced it, and its successor is the live run.
+
+- Takes run_id — from CreateWorkflow's or AmendWorkflow's result, from a completion notification, or from GetWorkflowRun / ListWorkflowRuns.
+
+- The resumed run is backgrounded: you will be notified with the final output when it completes. Do not wait for it or poll it with job_output; continue with other work unless the user asked you to wait.
+
+- An `errored` run (the script itself failed) is NOT resumable — replaying it would fail the same way. Fix the script and submit it with AmendWorkflow instead. A completed run is not resumable either; a `superseded` run is refused with the successor's ID.
+
+- Stop reason `user` means the user stopped it on purpose: resume it only when the user asks you to; never resume a run the user just cancelled on your own initiative. Reason `model` is your own job_kill. Reason `provider` means a provider-side error stopped it: resolve the cause with the user first (the stop notification names it), then resume. Reason `interrupted` (the process died) is different: continuing it is usually what the user wants.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "The workflow run ID to resume."
+    }
+  },
+  "required": [
+    "run_id"
+  ]
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `SaveWorkflow`
+
+Save a dynamic-workflow script with its metadata so it can be run again later by name (CreateWorkflow's `saved` source; ListSavedWorkflows lists them). The required `scope` decides whether it lives in this project or globally.
+
+NEVER call this tool unsolicited: saving writes a file into the user's repository, and that is their decision. When a workflow you just built looks reusable, suggest saving it in one sentence and wait; call SaveWorkflow only after the user agrees, or when the user asks directly.
+
+Load the `dynamic-workflows` skill with the `skill` tool first: it carries what belongs in a saved definition. Pass `script` (the body only) or `script_path` (a draft file, saved without re-emitting it), never both.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The saved workflow name (kebab-case)."
+    },
+    "scope": {
+      "type": "string",
+      "description": "project stores under <cwd>/.dsh/workflows; global under ~/.dsh/workflows.",
+      "enum": [
+        "project",
+        "global"
+      ]
+    },
+    "script": {
+      "type": "string",
+      "description": "The script body."
+    },
+    "script_path": {
+      "type": "string",
+      "description": "A draft file to save without re-emitting its text."
+    },
+    "description": {
+      "type": "string",
+      "description": "One-line description shown by ListSavedWorkflows."
+    },
+    "args": {
+      "description": "Default arguments persisted with the definition."
+    }
+  },
+  "required": [
+    "name",
+    "scope"
+  ]
+}
+```
+
+Source: [`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
 <a id="deepseek-aidsh-tool-bash-persistent"></a>
 
 ## `@deepseek-ai/dsh-tool-bash-persistent`
@@ -842,15 +1240,23 @@ One owner-isolated persistent pwsh tool, the Windows counterpart of the persiste
 ### `str_replace_editor`
 
 Custom editing tool for viewing, creating and editing files
+
 * State is persistent across command calls and discussions with the user
+
 * If `path` is a file, `view` displays the result of applying `cat -n`. If `path` is a directory, `view` lists non-hidden files and directories up to 2 levels deep
+
 * The `create` command cannot be used if the specified `path` already exists as a file
+
 * If a `command` generates a long output, it will be truncated and marked with `<response clipped>`
+
 * A null placeholder for a parameter unused by the selected command is treated as omitted. Required parameters still need values; omit `str_replace.new_str` rather than setting it to null when deleting a match
 
 Notes for using the `str_replace` command:
+
 * The `old_str` parameter should match EXACTLY one or more consecutive lines from the original file. Be mindful of whitespaces!
+
 * If the `old_str` parameter is not unique in the file, the replacement will not be performed. Make sure to include enough context in `old_str` to make it unique
+
 * The `new_str` parameter should contain the edited lines that should replace the `old_str`
 
 ```json
@@ -2564,9 +2970,13 @@ todo_write is session-owned state; UIs render the latest todo/write event as a c
 Run a JavaScript workflow script that orchestrates subagents at scale. Use this for work that fans out across many independent pieces — an audit over many files, a migration, multi-angle research, adversarial verification of findings — where you write the orchestration as a script instead of delegating turn by turn.
 
 Script-body hooks:
+
 - `agent(prompt, opts?): Promise<any>` — run one subagent to completion. Without `opts.schema` it resolves to the child's final text; with `opts.schema` (an object-rooted JSON Schema using ONLY type/properties/required/additionalProperties/items/enum/const/oneOf) it resolves to the validated object. Resolves `null` when the child fails (filter with `.filter(Boolean)`). Other opts: `label` (display), `phase` (progress group), and independent `provider`/`model` LLM target overrides.
+
 - `pipeline(items, ...stages): Promise<any[]>` — run each item through the stages independently with NO barrier between stages (prefer this for multi-stage work). Each stage receives `(prev, item, index)`. A stage throw drops that ITEM to `null` and skips its remaining stages.
+
 - `parallel(thunks): Promise<any[]>` — run zero-argument functions concurrently and await ALL of them (a barrier; use only when a stage genuinely needs every prior result together). A throwing thunk resolves to `null`.
+
 - `phase(title)` — start a progress phase; `log(message)` — narrate progress; `args` — the tool call's `args` input, verbatim.
 
 Misused hooks (bad arguments, unknown options, unsupported schemas, tripped caps) end the whole script instead of producing `null`. The script has no filesystem, network, timer, or Node.js APIs; the agents do the work.

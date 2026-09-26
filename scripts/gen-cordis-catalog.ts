@@ -199,6 +199,10 @@ export const SERVICE_WALK_EXEMPTIONS: Record<string, string> = {
   sidebarRight: 'client-side right-Sidebar navigation face — packages/client/ui-sidebar-right/README.md owns the API',
   sidebarRightTabs: 'client-side right-Sidebar tab-type registry — packages/client/ui-sidebar-right/README.md owns the API',
   documentPreviews: 'client-side document renderer registry — docs/subsystems/sidebar-right.md owns the API',
+  workflowRunDetail: 'client-side workflow run detail side pane — packages/client/ui-workflow-run-detail/README.md owns the API',
+  dynamicWorkflowRuns: 'optional dynamic-workflow engine port (DynamicWorkflowRunPort | undefined) the engine module installs — packages/workflow/tool-dynamic-workflow/README.md owns the seam',
+  workflowEscalate: 'optional dynamic-workflow escalate port (WorkflowEscalatePort | undefined) the engine module installs — packages/workflow/tool-dynamic-workflow/README.md owns the seam',
+  workflowSubmitResult: 'optional dynamic-workflow submit-result port (WorkflowSubmitResultPort | undefined) the engine module installs — packages/workflow/tool-dynamic-workflow/README.md owns the seam',
 }
 
 /**

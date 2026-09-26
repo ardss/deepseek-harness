@@ -1,0 +1,36 @@
+{
+  "name": "@deepseek-ai/dsh-workflow-notifications",
+  "description": "动态工作流通知铸造：终态 <task-notification> XML、deliveryGuidance、escalation/stall 文案与 artifact 行投影（ZCode runtime-task/notification.ts 的移植）",
+  "version": "0.1.7-rc.2",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/types/index.d.ts",
+      "default": "./lib/index.js"
+    },
+    "./src/*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-workflow-runs": "workspace:*",
+    "@deepseek-ai/cordis": "workspace:~"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepseek-ai/deepseek-harness.git",
+    "directory": "packages/workflow/workflow-notifications"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "workspace:~"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/types/**/*.d.ts"
+  ]
+}

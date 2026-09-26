@@ -397,6 +397,9 @@
     - id: tool-workflow
       name: '@deepseek-ai/dsh-tool-workflow'
 
+    - id: tool-dynamic-workflow
+      name: '@deepseek-ai/dsh-tool-dynamic-workflow'
+
     - id: timeout-policy
       name: '@deepseek-ai/dsh-tool-call-timeout-policy'
 

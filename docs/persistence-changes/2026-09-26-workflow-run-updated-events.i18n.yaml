@@ -1,0 +1,28 @@
+# Bilingual-pair consistency record for 2026-09-26-workflow-run-updated-events.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write docs/persistence-changes/2026-09-26-workflow-run-updated-events.md
+/:
+  en: 3d5a424ae7d7e46b
+  zh: c22a8e4a62d8cc1a
+/2026-09-26-workflow-run-updated-events:
+  en: 2688ca2d5742a562
+  zh: a588a63d013a8142
+/2026-09-26-workflow-run-updated-events/summary:
+  en: 7cf605083a44fa8d
+  zh: 5d6a5d4d02052f2c
+/2026-09-26-workflow-run-updated-events/table-of-contents:
+  en: 6cf314a069ceb451
+  zh: 9adff678e9ecab3b
+/2026-09-26-workflow-run-updated-events/declaration:
+  en: 6907136f28e48c90
+  zh: 02f8298485f3d8e7
+/2026-09-26-workflow-run-updated-events/compatibility:
+  en: f0ce942388496376
+  zh: 644af095322e70a6
+/2026-09-26-workflow-run-updated-events/verification:
+  en: 19962edb8458d6ad
+  zh: 4c07ee2df89dec2b
+/2026-09-26-workflow-run-updated-events/dev-note:
+  en: b75c8458928b72b9
+  zh: 003ba4e17b4b5269

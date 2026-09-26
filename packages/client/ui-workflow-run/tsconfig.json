@@ -18,6 +18,9 @@
       "path": "../../api/session-controller/tsconfig.client.json"
     },
     {
+      "path": "../../api/job-controller/tsconfig.client.json"
+    },
+    {
       "path": "../store"
     },
     {
@@ -49,6 +52,9 @@
     },
     {
       "path": "../../workflow/tool-workflow"
+    },
+    {
+      "path": "../../workflow/workflow-runs"
     }
   ]
 }

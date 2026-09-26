@@ -1,0 +1,16 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types",
+    "exactOptionalPropertyTypes": false
+  },
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../workflow-runs"
+    }
+  ]
+}

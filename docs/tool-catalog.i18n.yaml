@@ -9,8 +9,8 @@
   en: 6cc2cd9ced70bb09
   zh: 1c0e6cb4ba2ed637
 /tool-schema-catalog/tool-package-map:
-  en: 72e2a375567f5850
-  zh: b51b8ea5b52814fd
+  en: 602cf1efa668b478
+  zh: 39cbeba4f8c66479
 /tool-schema-catalog/deepseek-ai-dsh-plugin-manager:
   en: e0143916bb634762
   zh: e0143916bb634762
@@ -93,8 +93,41 @@
   en: 594e5b42047969cc
   zh: 72189ca21345c210
 /tool-schema-catalog/deepseek-ai-dsh-tool-cordis/cordis-inspect-query:
-  en: 8321129f661db9f7
+  en: f5efb83b720022f3
   zh: 6d9c220c84d47b06
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow:
+  en: 24d4d6536fcb32d6
+  zh: 24d4d6536fcb32d6
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/amendworkflow:
+  en: efbe4f48ff587d91
+  zh: 50dfb33bab1f01b8
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/createworkflow:
+  en: 2b92c7ed322fb5f9
+  zh: 4f2274e447da02d7
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/evalworkflowsnippet:
+  en: b727c5866bbd9c58
+  zh: 8f2dcc5a948ab175
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/getworkflowrun:
+  en: 872fca72f80c3d2a
+  zh: 0f716117af79bf6b
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/listmodels:
+  en: f836c21e771f42e5
+  zh: 869477fe13e9ed27
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/listsavedworkflows:
+  en: adbaaf5883453e40
+  zh: c9f09677fd4e2dc6
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/listworkflowruns:
+  en: d6ff68d6d9af545e
+  zh: 2580d6afb5bc68e0
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/resolveworkflowquestion:
+  en: 2f3cd87758e359ff
+  zh: ad43e32c8aa2054e
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/resumeworkflowrun:
+  en: a1d698eeb7682707
+  zh: 20fd6658d862fe16
+/tool-schema-catalog/deepseek-ai-dsh-tool-dynamic-workflow/saveworkflow:
+  en: 589edd2710d0c774
+  zh: 2e5276315e2add5f
 /tool-schema-catalog/deepseek-ai-dsh-tool-bash-persistent:
   en: bdd9e88c49029e05
   zh: bdd9e88c49029e05
@@ -111,7 +144,7 @@
   en: 591f6e54dbbc38fe
   zh: 591f6e54dbbc38fe
 /tool-schema-catalog/deepseek-ai-dsh-tool-str-replace-editor/str-replace-editor:
-  en: 3d11196a13e69228
+  en: 49d47425845df7d1
   zh: 56019c74cf0633cd
 /tool-schema-catalog/deepseek-ai-dsh-tool-fs:
   en: 07d595ce1f1a5184
@@ -294,7 +327,7 @@
   en: bb38a9d29f46563c
   zh: bb38a9d29f46563c
 /tool-schema-catalog/deepseek-ai-dsh-tool-workflow/workflow:
-  en: fdd667cfe21481e8
+  en: c06e92a3ea835aa6
   zh: 88864d3b958398a4
 /tool-schema-catalog/deepseek-ai-dsh-tool-workspace-dependencies:
   en: 96bffc40b80df4b8

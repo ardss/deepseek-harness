@@ -124,6 +124,7 @@
     "@deepseek-ai/dsh-tool-call-timeout-policy": "workspace:*",
     "@deepseek-ai/dsh-tool-cordis": "workspace:*",
     "@deepseek-ai/dsh-tool-fs": "workspace:*",
+    "@deepseek-ai/dsh-tool-dynamic-workflow": "workspace:*",
     "@deepseek-ai/dsh-tool-fs-search": "workspace:*",
     "@deepseek-ai/dsh-tool-goal": "workspace:*",
     "@deepseek-ai/dsh-tool-jobs": "workspace:*",
@@ -152,6 +153,8 @@
     "@deepseek-ai/dsh-web-search-perplexity": "workspace:*",
     "@deepseek-ai/dsh-workflow": "workspace:*",
     "@deepseek-ai/dsh-workflow-ptc": "workspace:*",
+    "@deepseek-ai/dsh-workflow-runs": "workspace:*",
+    "@deepseek-ai/dsh-workflow-notifications": "workspace:*",
     "@deepseek-ai/schemastery": "workspace:~"
   }
 }

@@ -69,6 +69,8 @@ function isSource(file: string): boolean {
   return /\.(?:[cm]?[jt]s|[jt]sx)$/u.test(file)
     && !file.startsWith('vendor/')
     && !file.startsWith('.agents/notes/archived/')
+    // tmp-research/ 是仓库内的外部研究检出（如 ZCode 源码），不属本仓源码面。
+    && !file.startsWith('tmp-research/')
 }
 
 /**

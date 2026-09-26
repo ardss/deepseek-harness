@@ -342,6 +342,13 @@
     - id: ui-workflow-run
       name: '@deepseek-ai/dsh-client-ui-workflow-run'
 
+    # Workflow run detail side pane (right Sidebar page type) and the artifact
+    # preset boards it dispatches to (chart / table / metrics / board).
+    - id: ui-workflow-run-detail
+      name: '@deepseek-ai/dsh-client-ui-workflow-run-detail'
+    - id: ui-workflow-artifacts
+      name: '@deepseek-ai/dsh-client-ui-workflow-artifacts'
+
     # Input triggers: the '/' | '@' pipeline (ui-input-trigger), the command surface over
     # it (ui-commands), and the reference sources (ui-skill / ui-reference).
     - id: ui-input-trigger

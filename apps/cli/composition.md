@@ -152,6 +152,8 @@ flowchart LR
   cfg --> plugin_dsh_base_workflow_ptc
   plugin_dsh_base_tool_workflow["tool-workflow<br/>@deepseek-ai/dsh-tool-workflow"]
   cfg --> plugin_dsh_base_tool_workflow
+  plugin_dsh_base_tool_dynamic_workflow["tool-dynamic-workflow<br/>@deepseek-ai/dsh-tool-dynamic-workflow"]
+  cfg --> plugin_dsh_base_tool_dynamic_workflow
   plugin_dsh_base_timeout_policy["timeout-policy<br/>@deepseek-ai/dsh-tool-call-timeout-policy"]
   cfg --> plugin_dsh_base_timeout_policy
   plugin_dsh_base_spill_local["spill-local<br/>@deepseek-ai/dsh-spill-local"]
@@ -270,6 +272,7 @@ flowchart LR
 | `ptc-runtime` | `@deepseek-ai/dsh-ptc-runtime-node` |
 | `workflow-ptc` | `@deepseek-ai/dsh-workflow-ptc` |
 | `tool-workflow` | `@deepseek-ai/dsh-tool-workflow` |
+| `tool-dynamic-workflow` | `@deepseek-ai/dsh-tool-dynamic-workflow` |
 | `timeout-policy` | `@deepseek-ai/dsh-tool-call-timeout-policy` |
 | `spill-local` | `@deepseek-ai/dsh-spill-local` |
 | `spill-policy` | `@deepseek-ai/dsh-spill-policy` |

@@ -46,6 +46,7 @@ import * as ToolBashPersistent from '@deepseek-ai/dsh-tool-bash-persistent'
 import * as ToolPwshPersistent from '@deepseek-ai/dsh-tool-pwsh-persistent'
 import CordisHostRunner from '@deepseek-ai/dsh-cordis-host-runner'
 import * as ToolCordis from '@deepseek-ai/dsh-tool-cordis'
+import * as ToolDynamicWorkflow from '@deepseek-ai/dsh-tool-dynamic-workflow'
 import * as ToolPresent from '@deepseek-ai/dsh-tool-present'
 import * as ToolFs from '@deepseek-ai/dsh-tool-fs'
 import * as ToolFsSearch from '@deepseek-ai/dsh-tool-fs-search'
@@ -344,6 +345,16 @@ const TOOL_PACKAGES: ToolPackage[] = [
     },
     note:
       'Creator mode provides two read-only runtime inspection tools. The Cordis host runner supplies the inspection registry; Client queries require a connected page. Author persistent changes as bundles and install them with plugin_manager.',
+  },
+  {
+    pkg: '@deepseek-ai/dsh-tool-dynamic-workflow',
+    dir: 'tool-dynamic-workflow',
+    source: 'packages/workflow/tool-dynamic-workflow/src/index.ts',
+    requires: ['ctx.tools', 'ctx.systemPrompt', 'optional dynamic-workflow run/escalation ports (absent ports yield placeholder responses)'],
+    writes: ['tool/call', 'tool/result'],
+    async mount(ctx) {
+      await ctx.plugin(ToolDynamicWorkflow)
+    },
   },
   {
     pkg: '@deepseek-ai/dsh-tool-bash-persistent',
@@ -788,7 +799,12 @@ function toolSource(entry: ToolPackage, toolName: string): string {
 /** Render one tool's entry: name, description, JSON-Schema parameters, source. */
 function renderTool(schema: ToolSchema, source: string): string[] {
   const out = [`### \`${schema.name}\``, '']
-  if (schema.description) out.push(schema.description, '')
+  // 多段描述按"一段一物理行"展开：每个逻辑段落独占一个物理行，段间空行，
+  // 避免 verify-md-wrap 把目录里的描述判成硬换行散文。
+  if (schema.description) {
+    const descriptionLines = schema.description.split('\n').map(line => line.trim()).filter(line => line.length > 0)
+    for (const line of descriptionLines) out.push(line, '')
+  }
   out.push('```json', JSON.stringify(schema.parameters, null, 2), '```', '')
   out.push(`Source: [\`${source}\`](../${source})`, '')
   return out

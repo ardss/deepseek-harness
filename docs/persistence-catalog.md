@@ -35,6 +35,7 @@ The [format references](persistence-changes/historical-formats/README.md) cover 
 | `event:compaction/summary` | event | `e2f9a41e0989f54ed8cee80f8db2bcf9d60a5c810dc9d45b83fa050b9dce7602` | [`{ type: "compaction/summary" }`](#persistence-type-sha256-e2f9a41e0989f54ed8cee80f8db2bcf9d60a5c810dc9d45b83fa050b9dce7602) |
 | `event:deliverables/presented` | event | `13d3d180f977bf78081d487ffa0ecb75857349bcab29a5a3fb48189fca2a6176` | [`{ type: "deliverables/presented" }`](#persistence-type-sha256-13d3d180f977bf78081d487ffa0ecb75857349bcab29a5a3fb48189fca2a6176) |
 | `event:developer/message` | event | `eef4ef54dc7a133d47448a4ee822e45a351314923ef5f66db34c8b24e4b32d80` | [`{ type: "developer/message" }`](#persistence-type-sha256-eef4ef54dc7a133d47448a4ee822e45a351314923ef5f66db34c8b24e4b32d80) |
+| `event:expert-run/updated` | event | `489ce67974001f25c5afc2890ef99a4d75a09a20b10bcc6fe8dcd92013c0516a` | [`{ type: "expert-run/updated" }`](#persistence-type-sha256-489ce67974001f25c5afc2890ef99a4d75a09a20b10bcc6fe8dcd92013c0516a) |
 | `event:feedback/message-delete` | event | `3ee93b06f3a125850337602bcdf155d2538c43a5c944ec55b1b3c365152d6796` | [`{ type: "feedback/message-delete" }`](#persistence-type-sha256-3ee93b06f3a125850337602bcdf155d2538c43a5c944ec55b1b3c365152d6796) |
 | `event:feedback/message-put` | event | `b5086d249e8502e9ead1d39156bb8d559bde7951cac0f14ce150345b4e42a2bf` | [`{ type: "feedback/message-put" }`](#persistence-type-sha256-b5086d249e8502e9ead1d39156bb8d559bde7951cac0f14ce150345b4e42a2bf) |
 | `event:feedback/record` | event | `b54940ff095c17e874c5be03815f4c2145a256cf3a1d34dae4ab2f7769dfffe8` | [`{ type: "feedback/record" }`](#persistence-type-sha256-b54940ff095c17e874c5be03815f4c2145a256cf3a1d34dae4ab2f7769dfffe8) |
@@ -42,6 +43,7 @@ The [format references](persistence-changes/historical-formats/README.md) cover 
 | `event:hook/invoked` | event | `8a6e1ec9e8db346b0e02f027db73c07a94f067a26d40c1aef1abd09c47ce7ba0` | [`{ type: "hook/invoked" }`](#persistence-type-sha256-8a6e1ec9e8db346b0e02f027db73c07a94f067a26d40c1aef1abd09c47ce7ba0) |
 | `event:hook/result` | event | `e75916628f3f10c2d50658bd143052a46285fbf1a9a700ba54947614603d26b4` | [`{ type: "hook/result" }`](#persistence-type-sha256-e75916628f3f10c2d50658bd143052a46285fbf1a9a700ba54947614603d26b4) |
 | `event:image/offload` | event | `b222069eea2d768065161c1147b1f2c78c1b54328c84b3586ae5c8f91b8ed35e` | [`{ type: "image/offload" }`](#persistence-type-sha256-b222069eea2d768065161c1147b1f2c78c1b54328c84b3586ae5c8f91b8ed35e) |
+| `event:journal-run/updated` | event | `cd3f90f19720553b97a16c7790576cf441ff69c3977d30d6f37fcfe8947c5d80` | [`{ type: "journal-run/updated" }`](#persistence-type-sha256-cd3f90f19720553b97a16c7790576cf441ff69c3977d30d6f37fcfe8947c5d80) |
 | `event:llm/retry` | event | `525254db03b1d1e6b74cf55aced52817568331ac1f96c0818728910b6692e336` | [`{ type: "llm/retry" }`](#persistence-type-sha256-525254db03b1d1e6b74cf55aced52817568331ac1f96c0818728910b6692e336) |
 | `event:llm/retry-started` | event | `48e5c9861f16ac07e78cb7b5ae9dabdf7bb85c58baed5a51b4ad275050ea58e3` | [`{ type: "llm/retry-started" }`](#persistence-type-sha256-48e5c9861f16ac07e78cb7b5ae9dabdf7bb85c58baed5a51b4ad275050ea58e3) |
 | `event:model/selection` | event | `35203ba7ad5ef6f97d556b85df20ae98f04f09c65748cecdf8eefdb8b6405ffc` | [`{ type: "model/selection" }`](#persistence-type-sha256-35203ba7ad5ef6f97d556b85df20ae98f04f09c65748cecdf8eefdb8b6405ffc) |
@@ -502,6 +504,19 @@ Source: [`packages/deliverables/tool-present/src/types.ts:15`](../packages/deliv
 
 Source: [`packages/core/session/src/types.ts:311`](../packages/core/session/src/types.ts)
 
+### `expert-run/*`
+
+<a id="expert-runupdated--log-only"></a>
+
+#### `expert-run/updated` — log-only
+
+```ts persistence-catalog
+/** Host-side bounded projection snapshot for one expert workflow run. */
+'expert-run/updated': ExpertRunProjectionEvent
+```
+
+Source: [`packages/client/ui-workflow-run/src/client/workflow-projection.ts:39`](../packages/client/ui-workflow-run/src/client/workflow-projection.ts)
+
 ### `feedback/*`
 
 <a id="feedbackmessage-delete--log-only"></a>
@@ -623,6 +638,19 @@ Source: [`packages/hooks/hook-protocol/src/types.ts:31`](../packages/hooks/hook-
 ```
 
 Source: [`packages/compaction/compaction-image-offload/src/projection.ts:25`](../packages/compaction/compaction-image-offload/src/projection.ts)
+
+### `journal-run/*`
+
+<a id="journal-runupdated--log-only"></a>
+
+#### `journal-run/updated` — log-only
+
+```ts persistence-catalog
+/** Host-side bounded projection snapshot for one dynamic workflow run. */
+'journal-run/updated': DynamicRunProjectionEvent
+```
+
+Source: [`packages/client/ui-workflow-run/src/client/workflow-projection.ts:37`](../packages/client/ui-workflow-run/src/client/workflow-projection.ts)
 
 ### `llm/*`
 
@@ -1429,6 +1457,14 @@ SHA-256: `17aae616ef020b8b9f011ec398ec935450fb06d3e2a0722c456f63aeaf5ff728`
 
 `"at"`
 
+<a id="persistence-type-sha256-4cfae79ae182b1830bb914fea025b8b7d248659feaf02ee5c7a75092ac01f667"></a>
+
+### `"auth"`
+
+SHA-256: `4cfae79ae182b1830bb914fea025b8b7d248659feaf02ee5c7a75092ac01f667`
+
+`"auth"`
+
 <a id="persistence-type-sha256-1e346446e183ee76f48d7994c97ecb302bddc682abb60b8a10ea0bb26223a69c"></a>
 
 ### `"block"`
@@ -1461,6 +1497,14 @@ SHA-256: `254dce209e735f9cb6f6b7aec0354712b1611759ec02af4d35a96f2081e666f6`
 
 `"blocked"`
 
+<a id="persistence-type-sha256-9b123cda193e36e60f664693ea800137957abc2d10471dfdd1f2a019d5ca721d"></a>
+
+### `"board"`
+
+SHA-256: `9b123cda193e36e60f664693ea800137957abc2d10471dfdd1f2a019d5ca721d`
+
+`"board"`
+
 <a id="persistence-type-sha256-d4e4d575abeb4b72d616dc65c17ac0eaa943cc135609395044c38d5afcb10e31"></a>
 
 ### `"canceled"`
@@ -1492,6 +1536,14 @@ SHA-256: `aec150797b655c5f15ebb7a501454b0c208fbaccec9ace49d7de2171fc02f47d`
 SHA-256: `f789af5ab844827eb5a4f357c0afae1eeed108c6c22d8ca1a56e586b349a7c85`
 
 `"change"`
+
+<a id="persistence-type-sha256-0c39438f92607a1ad23743f6ac3c9deea0b932080b33677774eb12d49af6c3c8"></a>
+
+### `"chart"`
+
+SHA-256: `0c39438f92607a1ad23743f6ac3c9deea0b932080b33677774eb12d49af6c3c8`
+
+`"chart"`
 
 <a id="persistence-type-sha256-14230f9b8b5797bb7e8c621fa636531cfbde2ffba1ef5f1fd058216ff21952a0"></a>
 
@@ -1596,6 +1648,14 @@ SHA-256: `d9196086e41e4dd5c2ce87f5c25529c8112a1731d258cf0728747d41a9ee3241`
 SHA-256: `1ebc6f9ff3aa9e3a38f8695f49bacdab1f8b7a3832741853ca46f40af56ccd01`
 
 `"completed"`
+
+<a id="persistence-type-sha256-8997bdd4c37a77dac94a89d0dbe051eba4b57289da59057611f22967553e0523"></a>
+
+### `"configuration"`
+
+SHA-256: `8997bdd4c37a77dac94a89d0dbe051eba4b57289da59057611f22967553e0523`
+
+`"configuration"`
 
 <a id="persistence-type-sha256-e5d3828df1ec3e2a66879de0659e0f4866d9cfffc00825ee731a66f8a0c03d98"></a>
 
@@ -1717,6 +1777,14 @@ SHA-256: `a2be0f0cb59f0d4a06557d45847d1938aced238baa77a6da416e590b8b958553`
 
 `"error"`
 
+<a id="persistence-type-sha256-3f00fe753befd3b7852901f3e66720f38bd081961a7df509494c8fe2f30ee47b"></a>
+
+### `"errored"`
+
+SHA-256: `3f00fe753befd3b7852901f3e66720f38bd081961a7df509494c8fe2f30ee47b`
+
+`"errored"`
+
 <a id="persistence-type-sha256-e42b0f40b5d0b628c6e1c44a8fb9eda0780037a81959e1b93d2dfb47b46b0e87"></a>
 
 ### `"every"`
@@ -1724,6 +1792,14 @@ SHA-256: `a2be0f0cb59f0d4a06557d45847d1938aced238baa77a6da416e590b8b958553`
 SHA-256: `e42b0f40b5d0b628c6e1c44a8fb9eda0780037a81959e1b93d2dfb47b46b0e87`
 
 `"every"`
+
+<a id="persistence-type-sha256-4cdcf7f2d1d7150c6510f9544673fe4d0214cc71f3460d136eef76a208417e01"></a>
+
+### `"expert-run/updated"`
+
+SHA-256: `4cdcf7f2d1d7150c6510f9544673fe4d0214cc71f3460d136eef76a208417e01`
+
+`"expert-run/updated"`
 
 <a id="persistence-type-sha256-b57a2889408de36e4516807194c73bdecd51a92f633ccd05db81bf049200f420"></a>
 
@@ -1963,6 +2039,22 @@ SHA-256: `69d238a6e9b08d67f601b1825962963d8d3523cb69ebf6208c697dc5d058c199`
 
 `"interrupted"`
 
+<a id="persistence-type-sha256-1348ffadcaa180fb2985c39da8e3b1b6741bcd9fe7fb1b56db211431b5a72364"></a>
+
+### `"invalid_request"`
+
+SHA-256: `1348ffadcaa180fb2985c39da8e3b1b6741bcd9fe7fb1b56db211431b5a72364`
+
+`"invalid_request"`
+
+<a id="persistence-type-sha256-f0e40a9b233b1c015e1a675e9c3d6520ad9e682fb3813f200c9f489941f2e976"></a>
+
+### `"journal-run/updated"`
+
+SHA-256: `f0e40a9b233b1c015e1a675e9c3d6520ad9e682fb3813f200c9f489941f2e976`
+
+`"journal-run/updated"`
+
 <a id="persistence-type-sha256-ad3b56aa2fc1ad4250e7399295d34a8eae592e1907e85852e2291b2e498a30bc"></a>
 
 ### `"legacy"`
@@ -1995,6 +2087,14 @@ SHA-256: `68141cbe3994a5ffcd064c07c75996538437fd9dbf77ce8a2927e89ec577fabe`
 
 `"max-tokens"`
 
+<a id="persistence-type-sha256-742b8299805b3620bbfa2adfa43881435081a5afc90a3482f9cd141e2664b803"></a>
+
+### `"metrics"`
+
+SHA-256: `742b8299805b3620bbfa2adfa43881435081a5afc90a3482f9cd141e2664b803`
+
+`"metrics"`
+
 <a id="persistence-type-sha256-2765e9119edf5816ac1ab4c95c5ee32c90403f3742962eff11544f7752d59d2e"></a>
 
 ### `"model"`
@@ -2019,6 +2119,22 @@ SHA-256: `1d5f04a03ea75fc8eeece544129eba0f49f0c82046e9c404461920390135c7b2`
 
 `"model/selection"`
 
+<a id="persistence-type-sha256-03067385b140f60e7b2086eb2fb797e0c42b37c060314b2912f3b3aecdef7cee"></a>
+
+### `"model_context"`
+
+SHA-256: `03067385b140f60e7b2086eb2fb797e0c42b37c060314b2912f3b3aecdef7cee`
+
+`"model_context"`
+
+<a id="persistence-type-sha256-3fdd2f8767594c1f0ae2bb91d455bb13af8a4622693f1f25bcdeceae8cee8b7e"></a>
+
+### `"model_unavailable"`
+
+SHA-256: `3fdd2f8767594c1f0ae2bb91d455bb13af8a4622693f1f25bcdeceae8cee8b7e`
+
+`"model_unavailable"`
+
 <a id="persistence-type-sha256-b1f62380f6746fedd629e71065e3583cef83334875b499ac9665c2eb87acfbf5"></a>
 
 ### `"negative"`
@@ -2026,6 +2142,14 @@ SHA-256: `1d5f04a03ea75fc8eeece544129eba0f49f0c82046e9c404461920390135c7b2`
 SHA-256: `b1f62380f6746fedd629e71065e3583cef83334875b499ac9665c2eb87acfbf5`
 
 `"negative"`
+
+<a id="persistence-type-sha256-1abe3f7b0521eedcb491feff9dffa8f04fb0cd782dfd879ccb9e43f54fcaeea6"></a>
+
+### `"network"`
+
+SHA-256: `1abe3f7b0521eedcb491feff9dffa8f04fb0cd782dfd879ccb9e43f54fcaeea6`
+
+`"network"`
 
 <a id="persistence-type-sha256-1571525adc95a24e5d25b5a6440df401cd7cdd881b745178e85f5a333435cd1b"></a>
 
@@ -2058,6 +2182,14 @@ SHA-256: `62ecb62dc0fe1b5e70217f8a80c39256a40ee3a1917be14e5ca899d20c35f7fd`
 SHA-256: `3bc287e765d58dc3a22672a0495a6cfd561220dd38fbaecef80aa95b96caed79`
 
 `"normal"`
+
+<a id="persistence-type-sha256-bed5cafad9126f19ac7cdd958694a6515a1bc25537e215caa5a6dbc7f677ce7d"></a>
+
+### `"not_configured"`
+
+SHA-256: `bed5cafad9126f19ac7cdd958694a6515a1bc25537e215caa5a6dbc7f677ce7d`
+
+`"not_configured"`
 
 <a id="persistence-type-sha256-e8de0f457fed5b9ff94dc4950b59ef75fd8ba8af665cc7899485924a62653367"></a>
 
@@ -2114,6 +2246,14 @@ SHA-256: `c43b119ce579b3e9983a0d3adc4ba402ebb9ba773d89738a2dab01ecf5813943`
 SHA-256: `234142ee4f996f38cc9fa3b8b3e3de29b03c9aefe5ebf6c224eddd564505aa85`
 
 `"pending"`
+
+<a id="persistence-type-sha256-7f3fe6064607df98450aa0e53de8081f9cc2729a3b523c4c5650d85feb8f1b0b"></a>
+
+### `"permission"`
+
+SHA-256: `7f3fe6064607df98450aa0e53de8081f9cc2729a3b523c4c5650d85feb8f1b0b`
+
+`"permission"`
 
 <a id="persistence-type-sha256-ae63d9d1080ed8945031594d93f8d96651d7101b848719cc3e1475875cd3d649"></a>
 
@@ -2178,6 +2318,22 @@ SHA-256: `871bfd6f7bb91061246768d3377f3fd58d6b8ea7c31f44c714ae7ab215650d62`
 SHA-256: `4edec1b770e8ec4ce1220bf42edc5ac46713a1b48d4caa778dcfc98bad1f28a3`
 
 `"ptc-mode"`
+
+<a id="persistence-type-sha256-d66ef48eda694ca7fba03b76f6e6ab87f6cc3d62e5b7be9bea54e05e85ec48e6"></a>
+
+### `"quota"`
+
+SHA-256: `d66ef48eda694ca7fba03b76f6e6ab87f6cc3d62e5b7be9bea54e05e85ec48e6`
+
+`"quota"`
+
+<a id="persistence-type-sha256-4308f35d8d742e74babd520ea8c7b266fa06d5a56deafc64be8e22c06b02077c"></a>
+
+### `"rate_limit"`
+
+SHA-256: `4308f35d8d742e74babd520ea8c7b266fa06d5a56deafc64be8e22c06b02077c`
+
+`"rate_limit"`
 
 <a id="persistence-type-sha256-12a0cfa619ac4a5fc6c3e8e359c8dae15769edc61497a575935c78d5842f8e42"></a>
 
@@ -2290,6 +2446,14 @@ SHA-256: `5bd310104cfe448e530beb11422d2f791e2e32e8e95fdc528a15f9ca693dae75`
 SHA-256: `34d1ab5c5df378186d6054b1a1beea9a41e41965d6f336f0bc0025c441a82e66`
 
 `"resume"`
+
+<a id="persistence-type-sha256-c6e4fa548c431804f6adebfaed3e343205c813699d2a191f990a7b1133e8c5ba"></a>
+
+### `"running"`
+
+SHA-256: `c6e4fa548c431804f6adebfaed3e343205c813699d2a191f990a7b1133e8c5ba`
+
+`"running"`
 
 <a id="persistence-type-sha256-24b10f7cdae64928f89c49afc2eca0af9eb4a2f135e16f3416e6b8461fef1748"></a>
 
@@ -2419,6 +2583,14 @@ SHA-256: `1922cd79a70806c17758185a6ef0458bc1fb3900363906733421c16414da2509`
 
 `"skill-invocation"`
 
+<a id="persistence-type-sha256-f2511d79be05bc19fa8c960ef480056a2bbc8b7cf4911dca388173d51ea0d63f"></a>
+
+### `"skipped"`
+
+SHA-256: `f2511d79be05bc19fa8c960ef480056a2bbc8b7cf4911dca388173d51ea0d63f`
+
+`"skipped"`
+
 <a id="persistence-type-sha256-6f9e00383836275e46c0a9915767f9bb561be5fc30aae490174908a93e99a912"></a>
 
 ### `"snapshot"`
@@ -2450,6 +2622,14 @@ SHA-256: `2c64d4bc7264fd3f8bed47e96ab8a593bce05a1e4e1c436dcd244a3b7e0c2a9d`
 SHA-256: `57f3f606ff8b6c84d9c443faace9d1dd10cca0354f37a4f515ef075f7c351b90`
 
 `"stop"`
+
+<a id="persistence-type-sha256-71d92bb3f006e9f1eafdd57ea0fa7ad61259ef0d8b6b07096cdf5de3933c2465"></a>
+
+### `"stopped"`
+
+SHA-256: `71d92bb3f006e9f1eafdd57ea0fa7ad61259ef0d8b6b07096cdf5de3933c2465`
+
+`"stopped"`
 
 <a id="persistence-type-sha256-aacda84a69739238aa782eea902d3073017d9d74b9808de2bf5a83c9738cbdc6"></a>
 
@@ -2499,6 +2679,14 @@ SHA-256: `511801b0a6470d98566e8385d3dffddb2b67f79fcf73ed6056f46c3cc0a245a7`
 
 `"success"`
 
+<a id="persistence-type-sha256-53561a22ec369a0190b2b8cfa158d509856f4ab54e7d232e24f52b20fe9c23a9"></a>
+
+### `"superseded"`
+
+SHA-256: `53561a22ec369a0190b2b8cfa158d509856f4ab54e7d232e24f52b20fe9c23a9`
+
+`"superseded"`
+
 <a id="persistence-type-sha256-8af841fc9b265ade3441caf9fe40dd24db24226befba48150e6d0eeccc1389c3"></a>
 
 ### `"system"`
@@ -2522,6 +2710,14 @@ SHA-256: `09655b34d7f3cf1e9005974de2357de2d4a60deea165d16dac1eadaa6ec539a8`
 SHA-256: `1c5a58f4599bd4a9711712551ffe2442a5e5fcd0758bafe630cc4ead850bdaa7`
 
 `"system/message"`
+
+<a id="persistence-type-sha256-c4bc386724a997c05b24cda4092dd9b3a0a1cbb37eefb652bbf59350906caec7"></a>
+
+### `"table"`
+
+SHA-256: `c4bc386724a997c05b24cda4092dd9b3a0a1cbb37eefb652bbf59350906caec7`
+
+`"table"`
 
 <a id="persistence-type-sha256-f05fb85e715af4ab4de0b6ba111166dd0435bd8bb74a0fa0f32b9d174113fc7c"></a>
 
@@ -2602,6 +2798,14 @@ SHA-256: `5abab3a27fd2736660ecddd94b28d6bbf114986dd894880153bd1be3ccacb563`
 SHA-256: `8067b0d232c350f189738e60ee3c9939d46ca3b32b45db5525237b077893f649`
 
 `"time-context"`
+
+<a id="persistence-type-sha256-2d431b50b572702b7c17e6dfb5c235f9cb1677a264eaccb154be8e80e383018f"></a>
+
+### `"timeout"`
+
+SHA-256: `2d431b50b572702b7c17e6dfb5c235f9cb1677a264eaccb154be8e80e383018f`
+
+`"timeout"`
 
 <a id="persistence-type-sha256-78a9be340090b735a39980e7222ce730c972fbcf1de7c9e0aef2125884b7caee"></a>
 
@@ -3230,6 +3434,191 @@ Source compatibility: `source` — `session-source-attribution` v1; `session.dev
 
 Attribution-only additions: `tmux-context`.
 
+<a id="persistence-type-sha256-a56a10b920a783a356108a52a7d34afc9f2a8605d8cf9145a1a00e1f03a6043b"></a>
+
+<a id="persistence-type-dynamicrunprojectionevent"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcprojectiontsdynamicrunprojectionevent"></a>
+
+### `DynamicRunProjectionEvent`
+
+SHA-256: `a56a10b920a783a356108a52a7d34afc9f2a8605d8cf9145a1a00e1f03a6043b`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:128`](../packages/workflow/workflow-runs/src/projection.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `artifacts` | optional | [`DynamicWorkflowRunArtifact[]`](#persistence-type-sha256-90154bd68a2e6ee0e4edbb2c5dc2dda75a16a17a355f0d93569ac053a549c59d) |
+| `concurrency` | optional | [`ProjectionConcurrency`](#persistence-type-sha256-3faa1138c6628d35e59917c1bbfa4a2c9f6df57263abd0554fc31e34115ed2bc) |
+| `currentPhase` | optional | `string` |
+| `error` | optional | [`DynamicWorkflowRunError`](#persistence-type-sha256-7cdf07056e62f0cc08681f74e6f6f14d3b9cb69b49d5f50e2d11799571f79ee2) |
+| `events` | optional | [`ProjectionEventLine[]`](#persistence-type-sha256-a868d71f167435e361014ba62ffaa8d9fea76bd6e7536ff11e1d65fdaed9b0a9) |
+| `jobId` | optional | `string` |
+| `label` | required | `string` |
+| `nodes` | optional | [`ProjectionNode[]`](#persistence-type-sha256-f549d548639819706e391f1c45017f6a5c818678cab65523f5541dee47f5e876) |
+| `pendingQuestions` | optional | [`DynamicWorkflowRunPendingQuestion[]`](#persistence-type-sha256-803071654e6ee353b7d0ded83c8df402412ddd4e39f6dde70721194c38981200) |
+| `phaseNames` | optional | [`string[]`](#persistence-type-sha256-93c33d9687613293f8c95d46c4d922fe9ceae83b84c384beff5c3315abe005f2) |
+| `reports` | optional | [`DynamicWorkflowRunReportItem[]`](#persistence-type-sha256-5cfb152f36311f78fafa82bd4d218a48923871799877025d02ece8f58a2b3e38) |
+| `resultPreview` | optional | `string` |
+| `resumable` | optional | `true` |
+| `resumedFrom` | optional | `string` |
+| `runId` | required | `string` |
+| `status` | required | [`DynamicRunStatus`](#persistence-type-sha256-ba169af277f766b371fbdd04ac89ef738d32b871772bc5226c4bdd0a67183b29) |
+| `stopReason` | optional | [`union (5 variants)`](#persistence-type-sha256-654290a5c09a69d3a673c077b1d050d545804a2ab18e77ff765597bae32c860a) |
+| `supersededBy` | optional | `string` |
+| `truncated` | optional | `boolean` |
+| `usage` | optional | [`{ durationMs?, totalTokens? }`](#persistence-type-sha256-efca909786cba73d9c1f9bfdfd16fc8c490f5d5522f76d0f3d4693d48672a453) |
+
+<a id="persistence-type-sha256-ba169af277f766b371fbdd04ac89ef738d32b871772bc5226c4bdd0a67183b29"></a>
+
+<a id="persistence-type-dynamicrunstatus"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcdynamictsdynamicrunstatus"></a>
+
+### `DynamicRunStatus`
+
+SHA-256: `ba169af277f766b371fbdd04ac89ef738d32b871772bc5226c4bdd0a67183b29`
+
+Sources: [`packages/workflow/workflow-runs/src/dynamic.ts:9`](../packages/workflow/workflow-runs/src/dynamic.ts)
+
+One of:
+
+- `"completed"`
+- `"errored"`
+- `"pending"`
+- `"running"`
+- `"stopped"`
+
+<a id="persistence-type-sha256-64d6a4cf958c37f57d9ef9da741a5e1a893fc35ab1378ef8974330e489c8b584"></a>
+
+<a id="persistence-type-dynamicworkflowrunartifact"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcdynamictsdynamicworkflowrunartifact"></a>
+
+### `DynamicWorkflowRunArtifact`
+
+SHA-256: `64d6a4cf958c37f57d9ef9da741a5e1a893fc35ab1378ef8974330e489c8b584`
+
+Sources: [`packages/workflow/workflow-runs/src/dynamic.ts:57`](../packages/workflow/workflow-runs/src/dynamic.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `bytes` | optional | `number` |
+| `contentType` | optional | `string` |
+| `description` | optional | `string` |
+| `id` | required | `string` |
+| `itemCount` | optional | `number` |
+| `kind` | required | `string` |
+| `preset` | optional | [`{ entries, kind, spec }`](#persistence-type-sha256-70c60755786643df197e1cfe1945ad05fe587a27f4d2fff091c0ac26b7738d16) |
+| `primary` | optional | `true` |
+| `title` | optional | `string` |
+| `version` | required | `number` |
+
+<a id="persistence-type-sha256-90154bd68a2e6ee0e4edbb2c5dc2dda75a16a17a355f0d93569ac053a549c59d"></a>
+
+### `DynamicWorkflowRunArtifact[]`
+
+SHA-256: `90154bd68a2e6ee0e4edbb2c5dc2dda75a16a17a355f0d93569ac053a549c59d`
+
+Array of [`DynamicWorkflowRunArtifact`](#persistence-type-sha256-64d6a4cf958c37f57d9ef9da741a5e1a893fc35ab1378ef8974330e489c8b584).
+
+<a id="persistence-type-sha256-7cdf07056e62f0cc08681f74e6f6f14d3b9cb69b49d5f50e2d11799571f79ee2"></a>
+
+<a id="persistence-type-dynamicworkflowrunerror"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcdynamictsdynamicworkflowrunerror"></a>
+
+### `DynamicWorkflowRunError`
+
+SHA-256: `7cdf07056e62f0cc08681f74e6f6f14d3b9cb69b49d5f50e2d11799571f79ee2`
+
+Sources: [`packages/workflow/workflow-runs/src/dynamic.ts:36`](../packages/workflow/workflow-runs/src/dynamic.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `code` | required | `string` |
+| `message` | required | `string` |
+| `providerStop` | optional | [`DynamicWorkflowRunProviderStop`](#persistence-type-sha256-3054823532f2c6d049fc596618d5b620076025e3500f05192dbd34a26d4e9bd6) |
+
+<a id="persistence-type-sha256-161c9f9c4ddcf93fff0c4c63a93ca2f6abdad0946bc3b90ee15d6ff046834a5d"></a>
+
+<a id="persistence-type-dynamicworkflowrunpendingquestion"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcdynamictsdynamicworkflowrunpendingquestion"></a>
+
+### `DynamicWorkflowRunPendingQuestion`
+
+SHA-256: `161c9f9c4ddcf93fff0c4c63a93ca2f6abdad0946bc3b90ee15d6ff046834a5d`
+
+Sources: [`packages/workflow/workflow-runs/src/dynamic.ts:44`](../packages/workflow/workflow-runs/src/dynamic.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `actor` | optional | `string` |
+| `actorName` | optional | `string` |
+| `askedAt` | optional | `number` |
+| `context` | optional | `string` |
+| `question` | required | `string` |
+| `questionId` | required | `string` |
+
+<a id="persistence-type-sha256-803071654e6ee353b7d0ded83c8df402412ddd4e39f6dde70721194c38981200"></a>
+
+### `DynamicWorkflowRunPendingQuestion[]`
+
+SHA-256: `803071654e6ee353b7d0ded83c8df402412ddd4e39f6dde70721194c38981200`
+
+Array of [`DynamicWorkflowRunPendingQuestion`](#persistence-type-sha256-161c9f9c4ddcf93fff0c4c63a93ca2f6abdad0946bc3b90ee15d6ff046834a5d).
+
+<a id="persistence-type-sha256-3054823532f2c6d049fc596618d5b620076025e3500f05192dbd34a26d4e9bd6"></a>
+
+<a id="persistence-type-dynamicworkflowrunproviderstop"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcdynamictsdynamicworkflowrunproviderstop"></a>
+
+### `DynamicWorkflowRunProviderStop`
+
+SHA-256: `3054823532f2c6d049fc596618d5b620076025e3500f05192dbd34a26d4e9bd6`
+
+Sources: [`packages/workflow/workflow-runs/src/dynamic.ts:21`](../packages/workflow/workflow-runs/src/dynamic.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `kind` | required | [`union (6 variants)`](#persistence-type-sha256-8b4826693358cd8b862430875435fa369b3fca0e1f581c05e4c82a5530f3ec58) |
+| `modelId` | optional | `string` |
+| `phase` | optional | `string` |
+| `providerCode` | optional | `string` |
+| `providerId` | optional | `string` |
+| `providerLabel` | optional | `string` |
+| `rawMessage` | optional | `string` |
+| `reason` | required | `string` |
+| `resetAt` | optional | `number` |
+| `subagent` | optional | `string` |
+| `subagentName` | optional | `string` |
+
+<a id="persistence-type-sha256-fc362d6c3bc744ee54ea7e008f30aff28f240db9d9882faec31b12982b643d5c"></a>
+
+<a id="persistence-type-dynamicworkflowrunreportitem"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcdynamictsdynamicworkflowrunreportitem"></a>
+
+### `DynamicWorkflowRunReportItem`
+
+SHA-256: `fc362d6c3bc744ee54ea7e008f30aff28f240db9d9882faec31b12982b643d5c`
+
+Sources: [`packages/workflow/workflow-runs/src/dynamic.ts:85`](../packages/workflow/workflow-runs/src/dynamic.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `text` | required | `string` |
+
+<a id="persistence-type-sha256-5cfb152f36311f78fafa82bd4d218a48923871799877025d02ece8f58a2b3e38"></a>
+
+### `DynamicWorkflowRunReportItem[]`
+
+SHA-256: `5cfb152f36311f78fafa82bd4d218a48923871799877025d02ece8f58a2b3e38`
+
+Array of [`DynamicWorkflowRunReportItem`](#persistence-type-sha256-fc362d6c3bc744ee54ea7e008f30aff28f240db9d9882faec31b12982b643d5c).
+
 <a id="persistence-type-sha256-9a930283b91d493d6347146f2475bb107294b379415ca02162354f46a64164f7"></a>
 
 <a id="persistence-type-epochheader"></a>
@@ -3267,6 +3656,38 @@ Sources: [`packages/schedule/schedule/src/types.ts:244`](../packages/schedule/sc
 | `id` | required | `string` |
 | `operation` | required | `"dispatch"` |
 | `version` | required | `1` |
+
+<a id="persistence-type-sha256-d31a957c99857309baacc26e727c68cd7d12b1d571124333022b28ee75b48b83"></a>
+
+<a id="persistence-type-expertrunprojectionevent"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcprojectiontsexpertrunprojectionevent"></a>
+
+### `ExpertRunProjectionEvent`
+
+SHA-256: `d31a957c99857309baacc26e727c68cd7d12b1d571124333022b28ee75b48b83`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:180`](../packages/workflow/workflow-runs/src/projection.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `artifacts` | optional | [`WorkflowArtifact[]`](#persistence-type-sha256-bea709170af44f61fa4340342399232138a3712e45284ce4386dc38edc177e1c) |
+| `currentPhase` | optional | `string` |
+| `events` | optional | [`ProjectionEventLine[]`](#persistence-type-sha256-a868d71f167435e361014ba62ffaa8d9fea76bd6e7536ff11e1d65fdaed9b0a9) |
+| `failure` | optional | [`{ kind, message }`](#persistence-type-sha256-b3fe674593fbca99d2c516712e325f28e8c8282b5897ca260b33fc6492920b14) |
+| `jobId` | optional | `string` |
+| `label` | required | `string` |
+| `nodes` | optional | [`ProjectionNode[]`](#persistence-type-sha256-f549d548639819706e391f1c45017f6a5c818678cab65523f5541dee47f5e876) |
+| `pauseReason` | optional | `string` |
+| `phaseOrder` | optional | [`string[]`](#persistence-type-sha256-93c33d9687613293f8c95d46c4d922fe9ceae83b84c384beff5c3315abe005f2) |
+| `phases` | optional | [`ProjectionPhase[]`](#persistence-type-sha256-ed19d7f9320253f6c99ccb39cd6ff32fd47660c9927a86d420d6006442a566d3) |
+| `recoveryActions` | optional | [`string[]`](#persistence-type-sha256-93c33d9687613293f8c95d46c4d922fe9ceae83b84c384beff5c3315abe005f2) |
+| `reportPreview` | optional | `string` |
+| `resumable` | optional | `true` |
+| `runId` | required | `string` |
+| `status` | required | [`WorkflowRunStatus`](#persistence-type-sha256-c697873fb2930d84db7ceb9d4c5aabf0a6d1e4a9f72569acdcd01be6f8b9d0d5) |
+| `task` | optional | `string` |
+| `truncated` | optional | `boolean` |
 
 <a id="persistence-type-sha256-7d54a5a5e629e2e7783bfac72683bcc5e969e9f43426b9289826aaf294ff6344"></a>
 
@@ -4181,6 +4602,123 @@ Sources: [`packages/deliverables/tool-present/src/types.ts:5`](../packages/deliv
 SHA-256: `1d9cb3caa96100b18b1911fa3ff8c751ef6992971a03c5f4d9aefc1a0004a345`
 
 Array of [`PresentedFile`](#persistence-type-sha256-b8fc636a2121df9d8423c242e03c9d23b7ab7c6fdce00e45746932c60b730f97).
+
+<a id="persistence-type-sha256-3faa1138c6628d35e59917c1bbfa4a2c9f6df57263abd0554fc31e34115ed2bc"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcprojectiontsprojectionconcurrency"></a>
+
+<a id="persistence-type-projectionconcurrency"></a>
+
+### `ProjectionConcurrency`
+
+SHA-256: `3faa1138c6628d35e59917c1bbfa4a2c9f6df57263abd0554fc31e34115ed2bc`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:65`](../packages/workflow/workflow-runs/src/projection.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `cap` | required | `number` |
+| `ceiling` | required | `number` |
+
+<a id="persistence-type-sha256-566f4b82a67804130d91689e3cfd57bed76860c50b9cea4b0b4ecd428f976388"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcprojectiontsprojectioneventline"></a>
+
+<a id="persistence-type-projectioneventline"></a>
+
+### `ProjectionEventLine`
+
+SHA-256: `566f4b82a67804130d91689e3cfd57bed76860c50b9cea4b0b4ecd428f976388`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:58`](../packages/workflow/workflow-runs/src/projection.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `seq` | required | `number` |
+| `summary` | required | `string` |
+| `type` | required | `string` |
+
+<a id="persistence-type-sha256-a868d71f167435e361014ba62ffaa8d9fea76bd6e7536ff11e1d65fdaed9b0a9"></a>
+
+### `ProjectionEventLine[]`
+
+SHA-256: `a868d71f167435e361014ba62ffaa8d9fea76bd6e7536ff11e1d65fdaed9b0a9`
+
+Array of [`ProjectionEventLine`](#persistence-type-sha256-566f4b82a67804130d91689e3cfd57bed76860c50b9cea4b0b4ecd428f976388).
+
+<a id="persistence-type-sha256-b60803578c925a9a9f0bb7f77e61f3a4a159d1193558e7b680eaef681cc461d7"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcprojectiontsprojectionnode"></a>
+
+<a id="persistence-type-projectionnode"></a>
+
+### `ProjectionNode`
+
+SHA-256: `b60803578c925a9a9f0bb7f77e61f3a4a159d1193558e7b680eaef681cc461d7`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:49`](../packages/workflow/workflow-runs/src/projection.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `id` | required | `string` |
+| `label` | required | `string` |
+| `phase` | optional | `string` |
+| `status` | required | [`ProjectionRunStatus`](#persistence-type-sha256-510d00a990fcb0c258194e23d6d8653e4b27bb8c228b4c23d8d1b3c8ea4e65d3) |
+
+<a id="persistence-type-sha256-f549d548639819706e391f1c45017f6a5c818678cab65523f5541dee47f5e876"></a>
+
+### `ProjectionNode[]`
+
+SHA-256: `f549d548639819706e391f1c45017f6a5c818678cab65523f5541dee47f5e876`
+
+Array of [`ProjectionNode`](#persistence-type-sha256-b60803578c925a9a9f0bb7f77e61f3a4a159d1193558e7b680eaef681cc461d7).
+
+<a id="persistence-type-sha256-b2307d848b6ed26c0b127aa155b085a69de0a2f35e3a2631023d1fe64f4111f8"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcprojectiontsprojectionphase"></a>
+
+<a id="persistence-type-projectionphase"></a>
+
+### `ProjectionPhase`
+
+SHA-256: `b2307d848b6ed26c0b127aa155b085a69de0a2f35e3a2631023d1fe64f4111f8`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:172`](../packages/workflow/workflow-runs/src/projection.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `artifactPath` | optional | `string` |
+| `phase` | required | `string` |
+| `status` | required | [`WorkflowNodeStatus`](#persistence-type-sha256-f6d4f4ff1348f5d265ee97933113c0c3a5e82712485a02128a10b68c2eb31e9f) |
+| `title` | optional | `string` |
+
+<a id="persistence-type-sha256-ed19d7f9320253f6c99ccb39cd6ff32fd47660c9927a86d420d6006442a566d3"></a>
+
+### `ProjectionPhase[]`
+
+SHA-256: `ed19d7f9320253f6c99ccb39cd6ff32fd47660c9927a86d420d6006442a566d3`
+
+Array of [`ProjectionPhase`](#persistence-type-sha256-b2307d848b6ed26c0b127aa155b085a69de0a2f35e3a2631023d1fe64f4111f8).
+
+<a id="persistence-type-sha256-510d00a990fcb0c258194e23d6d8653e4b27bb8c228b4c23d8d1b3c8ea4e65d3"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcprojectiontsprojectionrunstatus"></a>
+
+<a id="persistence-type-projectionrunstatus"></a>
+
+### `ProjectionRunStatus`
+
+SHA-256: `510d00a990fcb0c258194e23d6d8653e4b27bb8c228b4c23d8d1b3c8ea4e65d3`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:41`](../packages/workflow/workflow-runs/src/projection.ts)
+
+One of:
+
+- `"cancelled"`
+- `"completed"`
+- `"failed"`
+- `"interrupted"`
+- `"running"`
 
 <a id="persistence-type-sha256-0ee52de154f8955c7abc82cffebc57452dcc8c44dccbdb6ad16c71a11305ead8"></a>
 
@@ -5150,6 +5688,76 @@ One of:
 - `"completed"`
 - `"failed"`
 
+<a id="persistence-type-sha256-ffc302e3e8bbae0395db76095e9b59063a93455de93b9cb3f01be93b40f05c7c"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcexperttsworkflowartifact"></a>
+
+<a id="persistence-type-workflowartifact"></a>
+
+### `WorkflowArtifact`
+
+SHA-256: `ffc302e3e8bbae0395db76095e9b59063a93455de93b9cb3f01be93b40f05c7c`
+
+Sources: [`packages/workflow/workflow-runs/src/expert.ts:188`](../packages/workflow/workflow-runs/src/expert.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `contentType` | required | `string` |
+| `createdAt` | required | `string` |
+| `label` | required | `string` |
+| `path` | required | `string` |
+| `phase` | optional | `string` |
+
+<a id="persistence-type-sha256-bea709170af44f61fa4340342399232138a3712e45284ce4386dc38edc177e1c"></a>
+
+### `WorkflowArtifact[]`
+
+SHA-256: `bea709170af44f61fa4340342399232138a3712e45284ce4386dc38edc177e1c`
+
+Array of [`WorkflowArtifact`](#persistence-type-sha256-ffc302e3e8bbae0395db76095e9b59063a93455de93b9cb3f01be93b40f05c7c).
+
+<a id="persistence-type-sha256-f6d4f4ff1348f5d265ee97933113c0c3a5e82712485a02128a10b68c2eb31e9f"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcexperttsworkflownodestatus"></a>
+
+<a id="persistence-type-workflownodestatus"></a>
+
+### `WorkflowNodeStatus`
+
+SHA-256: `f6d4f4ff1348f5d265ee97933113c0c3a5e82712485a02128a10b68c2eb31e9f`
+
+Sources: [`packages/workflow/workflow-runs/src/expert.ts:37`](../packages/workflow/workflow-runs/src/expert.ts)
+
+One of:
+
+- `"active"`
+- `"cancelled"`
+- `"completed"`
+- `"failed"`
+- `"pending"`
+- `"skipped"`
+
+<a id="persistence-type-sha256-c697873fb2930d84db7ceb9d4c5aabf0a6d1e4a9f72569acdcd01be6f8b9d0d5"></a>
+
+<a id="persistence-type-packagesworkflowworkflow-runssrcexperttsworkflowrunstatus"></a>
+
+<a id="persistence-type-workflowrunstatus"></a>
+
+### `WorkflowRunStatus`
+
+SHA-256: `c697873fb2930d84db7ceb9d4c5aabf0a6d1e4a9f72569acdcd01be6f8b9d0d5`
+
+Sources: [`packages/workflow/workflow-runs/src/expert.ts:25`](../packages/workflow/workflow-runs/src/expert.ts)
+
+One of:
+
+- `"cancelled"`
+- `"completed"`
+- `"failed"`
+- `"paused"`
+- `"pending"`
+- `"running"`
+
 <a id="persistence-type-sha256-8465ece5e9d9007c038b357015d849c15262cb0bc25abc59e47692d87ee01a15"></a>
 
 <a id="persistence-type-packagesworkflowworkflowsrctypestsworkflowstopreason"></a>
@@ -5368,6 +5976,26 @@ SHA-256: `b993441f8ce7d27b80e619e113e232ae8e62d3d5a8340f6bfe12d8c4c018e62f`
 |---|---|---|
 | 0 | required | [`{ role: "user" }`](#persistence-type-sha256-9a2a9029f8d7ede05336980d8342737557f487b913bfd28853d0ab5214600ab5) |
 
+<a id="persistence-type-sha256-b8e6bd75a6a177dcd859cbdfbc1d106161245a608e6cd487b9d1df35f3d4c74a"></a>
+
+### `union (11 variants)`
+
+SHA-256: `b8e6bd75a6a177dcd859cbdfbc1d106161245a608e6cd487b9d1df35f3d4c74a`
+
+One of:
+
+- `"auth"`
+- `"cancelled"`
+- `"unknown"`
+- `"configuration"`
+- `"model_context"`
+- `"network"`
+- `"permission"`
+- `"provider"`
+- `"rate_limit"`
+- `"timeout"`
+- `"tool"`
+
 <a id="persistence-type-sha256-1ab2ef1296f157ba96998f179bb5daa9d21a82480da2901127aeab2730797c92"></a>
 
 ### `union (2 variants)`
@@ -5439,6 +6067,33 @@ One of:
 - `"in_progress"`
 - `"pending"`
 
+<a id="persistence-type-sha256-4c126a1b20263350b8caedb7dc8af9f1e05a00cd0e1062ba4d2ca4b2230b7d67"></a>
+
+### `union (4 variants)`
+
+SHA-256: `4c126a1b20263350b8caedb7dc8af9f1e05a00cd0e1062ba4d2ca4b2230b7d67`
+
+One of:
+
+- `"board"`
+- `"chart"`
+- `"metrics"`
+- `"table"`
+
+<a id="persistence-type-sha256-654290a5c09a69d3a673c077b1d050d545804a2ab18e77ff765597bae32c860a"></a>
+
+### `union (5 variants)`
+
+SHA-256: `654290a5c09a69d3a673c077b1d050d545804a2ab18e77ff765597bae32c860a`
+
+One of:
+
+- `"interrupted"`
+- `"model"`
+- `"provider"`
+- `"superseded"`
+- `"user"`
+
 <a id="persistence-type-sha256-62e6a429ff3f390a46ac39fb468692032f42936ca0db19b53454184189401379"></a>
 
 ### `union (6 variants)`
@@ -5453,6 +6108,21 @@ One of:
 - `"edit"`
 - `"pause"`
 - `"resume"`
+
+<a id="persistence-type-sha256-8b4826693358cd8b862430875435fa369b3fca0e1f581c05e4c82a5530f3ec58"></a>
+
+### `union (6 variants)`
+
+SHA-256: `8b4826693358cd8b862430875435fa369b3fca0e1f581c05e4c82a5530f3ec58`
+
+One of:
+
+- `"auth"`
+- `"invalid_request"`
+- `"model_unavailable"`
+- `"not_configured"`
+- `"other"`
+- `"quota"`
 
 <a id="persistence-type-sha256-3305a4bb6b6c29b482ba91d59c60b47e8f98282d3dacc8c29e4a4c2712209bdd"></a>
 
@@ -5877,6 +6547,19 @@ Sources: [`packages/hooks/hook-protocol/src/types.ts:19`](../packages/hooks/hook
 | `point` | required | `string` |
 | `turn` | required | `number` |
 
+<a id="persistence-type-sha256-efca909786cba73d9c1f9bfdfd16fc8c490f5d5522f76d0f3d4693d48672a453"></a>
+
+### `{ durationMs?, totalTokens? }`
+
+SHA-256: `efca909786cba73d9c1f9bfdfd16fc8c490f5d5522f76d0f3d4693d48672a453`
+
+Sources: [`packages/workflow/workflow-runs/src/projection.ts:148`](../packages/workflow/workflow-runs/src/projection.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `durationMs` | optional | `number` |
+| `totalTokens` | optional | `number` |
+
 <a id="persistence-type-sha256-9e41386b3a0c9572b0d63078492ebb3997da7d3a830d44e0259418bd02f4bcb2"></a>
 
 ### `{ end, start }`
@@ -5903,6 +6586,20 @@ Sources: [`packages/core/session/src/types.ts:464`](../packages/core/session/src
 | `endSeq` | required | `number` |
 | `op` | required | `"replace"` |
 | `startSeq` | required | `number` |
+
+<a id="persistence-type-sha256-70c60755786643df197e1cfe1945ad05fe587a27f4d2fff091c0ac26b7738d16"></a>
+
+### `{ entries, kind, spec }`
+
+SHA-256: `70c60755786643df197e1cfe1945ad05fe587a27f4d2fff091c0ac26b7738d16`
+
+Sources: [`packages/workflow/workflow-runs/src/dynamic.ts:75`](../packages/workflow/workflow-runs/src/dynamic.ts)
+
+| Property | Presence | Type |
+|---|---|---|
+| `entries` | required | [`unknown[]`](#persistence-type-sha256-b1664fa89f8eab49a14e7e3168d8bc4da4aa9fd76332f6c4a053d839e5276ae7) |
+| `kind` | required | [`union (4 variants)`](#persistence-type-sha256-4c126a1b20263350b8caedb7dc8af9f1e05a00cd0e1062ba4d2ca4b2230b7d67) |
+| `spec` | required | `unknown` (opaque) |
 
 <a id="persistence-type-sha256-79650cfa10aa3c52440328d85e8a25f0ffadc8d7efd784e3c0819d8bb74a1985"></a>
 
@@ -6100,6 +6797,17 @@ Sources: [`packages/core/session/src/types.ts:341`](../packages/core/session/src
 | `stream` | required | [`AssistantStreamRecord[]`](#persistence-type-sha256-84bbfdce7d2eab5b0c53e72ff7406db856c8bfd621b965b72fd86598ba493bf7) |
 | `turn` | required | `number` |
 | `usage` | optional | [`TokenUsage`](#persistence-type-sha256-fec5442b9ee4122e10514d81d5a43648003fe8bfb7ee2ba50c0cdbdd383ed394) |
+
+<a id="persistence-type-sha256-b3fe674593fbca99d2c516712e325f28e8c8282b5897ca260b33fc6492920b14"></a>
+
+### `{ kind, message }`
+
+SHA-256: `b3fe674593fbca99d2c516712e325f28e8c8282b5897ca260b33fc6492920b14`
+
+| Property | Presence | Type |
+|---|---|---|
+| `kind` | required | [`union (11 variants)`](#persistence-type-sha256-b8e6bd75a6a177dcd859cbdfbc1d106161245a608e6cd487b9d1df35f3d4c74a) |
+| `message` | required | `string` |
 
 <a id="persistence-type-sha256-0a30c3be336cdd4f8f34e66543a3d46d611c43986edd9b3ce6cbb9b721d3b5d3"></a>
 
@@ -7881,6 +8589,22 @@ SHA-256: `eef4ef54dc7a133d47448a4ee822e45a351314923ef5f66db34c8b24e4b32d80`
 | `time` | required | `number` |
 | `type` | required | `"developer/message"` |
 
+<a id="persistence-type-sha256-489ce67974001f25c5afc2890ef99a4d75a09a20b10bcc6fe8dcd92013c0516a"></a>
+
+<a id="persistence-type-eventexpert-runupdated"></a>
+
+### `{ type: "expert-run/updated" }`
+
+SHA-256: `489ce67974001f25c5afc2890ef99a4d75a09a20b10bcc6fe8dcd92013c0516a`
+
+| Property | Presence | Type |
+|---|---|---|
+| `data` | required | [`ExpertRunProjectionEvent`](#persistence-type-sha256-d31a957c99857309baacc26e727c68cd7d12b1d571124333022b28ee75b48b83) |
+| `ignorable` | optional | `true` |
+| `seq` | required | `number` |
+| `time` | required | `number` |
+| `type` | required | `"expert-run/updated"` |
+
 <a id="persistence-type-sha256-3ee93b06f3a125850337602bcdf155d2538c43a5c944ec55b1b3c365152d6796"></a>
 
 <a id="persistence-type-eventfeedbackmessage-delete"></a>
@@ -8006,6 +8730,22 @@ SHA-256: `b222069eea2d768065161c1147b1f2c78c1b54328c84b3586ae5c8f91b8ed35e`
 | `seq` | required | `number` |
 | `time` | required | `number` |
 | `type` | required | `"image/offload"` |
+
+<a id="persistence-type-sha256-cd3f90f19720553b97a16c7790576cf441ff69c3977d30d6f37fcfe8947c5d80"></a>
+
+<a id="persistence-type-eventjournal-runupdated"></a>
+
+### `{ type: "journal-run/updated" }`
+
+SHA-256: `cd3f90f19720553b97a16c7790576cf441ff69c3977d30d6f37fcfe8947c5d80`
+
+| Property | Presence | Type |
+|---|---|---|
+| `data` | required | [`DynamicRunProjectionEvent`](#persistence-type-sha256-a56a10b920a783a356108a52a7d34afc9f2a8605d8cf9145a1a00e1f03a6043b) |
+| `ignorable` | optional | `true` |
+| `seq` | required | `number` |
+| `time` | required | `number` |
+| `type` | required | `"journal-run/updated"` |
 
 <a id="persistence-type-sha256-525254db03b1d1e6b74cf55aced52817568331ac1f96c0818728910b6692e336"></a>
 

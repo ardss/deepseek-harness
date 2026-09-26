@@ -917,8 +917,11 @@ describe('plugin lifecycle', () => {
     await ctx.plugin({ inject: localeInject, apply: applyLocale }).await()
     const fiber = ctx.plugin({ inject: [...inject], apply })
     await fiber.await()
-    expect(conversationEvents.entries().map(entry => entry.kind)).toEqual(['workflow-run'])
-    expect(ctx.slots.entries('conversation.chat.node')).toHaveLength(1)
+    // 三个 run 节点定义：既有成员面板 + journal / expert 两族投影面板。
+    expect(conversationEvents.entries().map(entry => entry.kind)).toEqual([
+      'workflow-run', 'journal-workflow-run', 'expert-workflow-run',
+    ])
+    expect(ctx.slots.entries('conversation.chat.node')).toHaveLength(3)
     const entry = ctx.slots.entries('conversation.chat.node')[0]!
     const face = entry.inject?.() as unknown as WorkflowRunInjected
     face.openSession(CHILD_ID)
@@ -929,8 +932,10 @@ describe('plugin lifecycle', () => {
 
     const replacement = ctx.plugin({ inject: [...inject], apply })
     await replacement.await()
-    expect(conversationEvents.entries().map(entry => entry.kind)).toEqual(['workflow-run'])
-    expect(ctx.slots.entries('conversation.chat.node')).toHaveLength(1)
+    expect(conversationEvents.entries().map(entry => entry.kind)).toEqual([
+      'workflow-run', 'journal-workflow-run', 'expert-workflow-run',
+    ])
+    expect(ctx.slots.entries('conversation.chat.node')).toHaveLength(3)
     await replacement.dispose()
   })
 

@@ -29,6 +29,7 @@
 | `@deepseek-ai/dsh-tool-present` | `present` | `ctx.tools`, `ctx.fs`, `ctx.sessionProjections` | `tool/call`, `deliverables/presented 在成功的最终结果之后`, `tool/result` | - | 交付归调用方 Session 所有；Web ui-deliverables 提供源文件打开与卡片。 |
 | `@deepseek-ai/dsh-tool-pwsh` | `pwsh` | `ctx.tools`、`ctx.shell`、`ctx.systemPrompt`、`ctx.shellEnv`、`ctx.jobs for run_in_background and the job-backed foreground path` | `tool/call`、`tool/result` | - | pwsh 工具是 Windows 组合中 bash 执行器 seam 的 PowerShell 方言消费方（由 `@deepseek-ai/dsh-pwsh-local` 等 PowerShell 执行器为 `ctx.shell` 提供后端）；除沙箱接口外，它逐项对应 bash 工具调用。使用 `run_in_background` 的运行会注册到通用 `ctx.jobs` 运行时，并通过 `job_*` 工具收集／停止；托管的 `DSH_*` 环境来自 `@deepseek-ai/dsh-shell-env`。每次调用都在新进程中运行，不使用持久 PTY 会话。路径采用原生 `C:\...` 形式，变量采用 `$env:NAME`。 |
 | `@deepseek-ai/dsh-tool-cordis` | `cordis_inspect_list`, `cordis_inspect_query` | `ctx.tools`, `ctx.cordisInspect` | `tool/call`, `tool/result` | - | 创造模式提供两个只读运行时检查工具。Cordis host runner 提供检查注册表；Client 查询需要已连接页面。持久化变更编写为组合包，再通过 plugin_manager 安装。 |
+| `@deepseek-ai/dsh-tool-dynamic-workflow` | `AmendWorkflow`、`CreateWorkflow`、`EvalWorkflowSnippet`、`GetWorkflowRun`、`ListModels`、`ListSavedWorkflows`、`ListWorkflowRuns`、`ResolveWorkflowQuestion`、`ResumeWorkflowRun`、`SaveWorkflow` | `ctx.tools`、`ctx.systemPrompt`、可选的 dynamic-workflow run/escalation 端口（端口缺席时以占位应答） | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-bash-persistent` | `bash` | `ctx.tools`、`ctx.terminals`、`an owning Agent at execution time` | `tool/call`、`PTY shell state`、`tool/result` | - | 一个按所有者隔离的持久 bash 工具；部署组合提供 PTY 后端，并可覆盖面向模型的环境描述。 |
 | `@deepseek-ai/dsh-tool-pwsh-persistent` | `pwsh` | `ctx.tools`、`ctx.terminals`、`an owning Agent at execution time` | `tool/call`、`PTY shell state`、`tool/result` | - | 一个按所有者隔离的持久 pwsh 工具，持久 bash 工具的 Windows 对应物；部署组合提供 pwsh 方言的 PTY 后端，并可覆盖面向模型的环境描述。 |
 | `@deepseek-ai/dsh-tool-str-replace-editor` | `str_replace_editor` | `ctx.tools`、`ctx.fs` | `tool/call`、`fs/observed after view presence/absence, edit absence, or successful mutation`、`tool/result` | - | 基于文件系统 seam 的独立查看／创建／唯一字面量替换／按行插入工具；可与任何 shell 或终端接口组合。 |
@@ -786,6 +787,357 @@ pwsh 工具是 Windows 组合中 bash 执行器 seam 的 PowerShell 方言消费
 创造模式提供两个只读运行时检查工具。Cordis host runner 提供检查注册表；Client 查询需要已连接页面。持久化变更编写为组合包，再通过 plugin_manager 安装。
 
 <a id="deepseek-aidsh-tool-bash-persistent"></a>
+
+## `@deepseek-ai/dsh-tool-dynamic-workflow`
+
+### `AmendWorkflow`
+
+用修订后的脚本或修订后的设置修改既有 dynamic-workflow run。会启动一个取代旧 run 的新 run，并把旧 run 已完成的工作作为缓存导入，因此只有你改动的部分会重新支付。作用于本项目的任意 run：completed、errored、stopped——或仍在运行。
+
+使用时机：
+
+- run 出错，或已完成但还需要一个阶段：修复或扩展脚本后 amend。绝不要用 CreateWorkflow 从头重写工作流。
+- run 仍在运行且明显跑偏：立即一次调用完成 amend。不要先 job_kill，也不要等它跑完——本工具会停掉运行中的前代并启动修订版；越早 amend，重复支付的越少。
+- 用户想要同一工作流但同时并发更少 subagent、subagent 换模型或换名称：只传该字段，且不传 `path` 与 `script`。
+- 要原样继续一个已停止的 run，改用 ResumeWorkflowRun。
+
+修订脚本前先用 `skill` 工具加载 `dynamic-workflows` 技能：它携带缓存规则、各被省略字段的保留语义与确认规则。携带 `path` 或 `script` 的调用在该技能加载进本会话前会被拒绝；仅改设置的调用不受限。二选一传 `path`（run 的脚本文件，就地修改——常规形式）或 `script`（整段修订后脚本内联），绝不同时传。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "The run to amend — from CreateWorkflow/AmendWorkflow results, a notification, GetWorkflowRun or ListWorkflowRuns."
+    },
+    "script": {
+      "type": "string",
+      "description": "The whole revised script inline."
+    },
+    "path": {
+      "type": "string",
+      "description": "The run's script file, edited in place (the usual form)."
+    },
+    "max_concurrency": {
+      "type": "integer",
+      "description": "Revised concurrent-subagent cap."
+    },
+    "subagent_model": {
+      "type": "string",
+      "description": "Revised subagent model selection."
+    },
+    "name": {
+      "type": "string",
+      "description": "Revised display name."
+    }
+  },
+  "required": [
+    "run_id"
+  ]
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `CreateWorkflow`
+
+创建并运行动态工作流：一段 TypeScript 脚本，用普通控制流（循环、条件、扇出）编排多个模型驱动的 subagent，并携带类型化的中间结果。脚本会做类型检查，用户被请求确认后 run 在后台启动；结算时你会收到最终结果通知。编译错误以诊断形式返回。
+
+使用时机：
+
+- 用户明确要求工作流——"use a workflow"、"with a workflow"、"使用 workflow"、"用工作流"，或任何把 workflow/工作流 点名为手段的措辞：此时本工具是强制的。
+
+不要用 subagent 委派工具替代，不要自己内联完成，也不要以"任务太小"为由不用工作流——用户选择了工具，选择权属于用户。规模只决定脚本分到多少 subagent，绝不决定写不写。
+
+- 没有这样的明确请求时，不要启动工作流：即使用 subagent 工具委派或自己完成，哪怕任务多步或需要多个 subagent。
+
+（多步或多 subagent 的任务也不例外。）
+
+编写或修订脚本前，先用 `skill` 工具加载 `dynamic-workflows` 技能：它携带脚本检查所依据的门面声明、创作规则与本工具的完整契约。提交脚本的调用在该技能加载进本会话前会被拒绝；按名称运行已保存工作流不受限。
+
+只传一个来源：`script`（一次性内联脚本；会保存为结果指名的草稿文件——修订该文件后用 `path` 重新提交，绝不再粘贴脚本）、`saved`（本项目或全局已保存的工作流，按名称；从头写之前先查 ListSavedWorkflows）、或 `path`（磁盘上的脚本文件，通常是上一次结果指名的文件）。要改动已存在的 run——errored、completed、stopped 或仍在运行——调用 AmendWorkflow 而不是重头再来。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "script": {
+      "type": "string",
+      "description": "A one-off script written inline; it is saved to a draft file the result names."
+    },
+    "saved": {
+      "type": "object",
+      "description": "Run a workflow saved in this project or globally. Fields: name (required), args (optional JSON input).",
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The saved workflow name."
+        },
+        "args": {
+          "description": "Optional JSON input persisted with the saved definition."
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "path": {
+      "type": "string",
+      "description": "A script file on disk (normally the draft a previous result named); submitted without re-pasting the script."
+    },
+    "name": {
+      "type": "string",
+      "description": "Optional display name; falls back to the first phase name."
+    },
+    "args": {
+      "description": "JSON input exposed to the script as `args` (top-level `path` source only)."
+    },
+    "max_concurrency": {
+      "type": "integer",
+      "description": "Optional cap on concurrently running subagents."
+    },
+    "subagent_model": {
+      "type": "string",
+      "description": "Optional subagent model selection; check ListModels for valid values."
+    },
+    "script_line_offset": {
+      "type": "integer",
+      "description": "Line offset between inline script text and the draft file (metadata block present)."
+    }
+  }
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `EvalWorkflowSnippet`
+
+对照真实运行所用的同一编译器、沙箱与世界读取执行路径，同步编译并求值一小段动态工作流 TypeScript 片段。它是工作流创作的试验台：先在真实的仓库状态上验证解析器、确认 glob 实际返回什么、或检验一个门谓词，再把它放进 CreateWorkflow 脚本。没有 agent()/report()；什么都不持久化；结果在本次调用中返回。
+
+先用 `skill` 工具加载 `dynamic-workflows` 技能：它携带片段门面与规则。该技能加载进本会话前调用会被拒绝。传 `code`（内联）或 `path`（保存片段的文件），绝不同时传。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "The snippet, inline."
+    },
+    "path": {
+      "type": "string",
+      "description": "A file holding the snippet."
+    }
+  }
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `GetWorkflowRun`
+
+返回一个 dynamic-workflow run 的当前状态：运行中返回进度、token 用量与其 log() 叙述的末尾；已完成返回最终结果；出错或被停止返回结构化失败。
+
+本会话启动的 run 会自行结算：你会收到携带最终输出的完成通知。等待期间不要轮询本工具——继续做其他工作。
+
+适用场景：(a) 用户询问工作流进展；(b) 你想回看本项目更早的 run，包括其他会话启动的；(c) 完成通知被截断，你需要按 ID 读取 run 的完整记录。
+
+- 传入 run_id——来自 CreateWorkflow 或 AmendWorkflow 的结果、一条完成通知，或 ListWorkflowRuns。
+- 这是即时快照，从不等待。要阻塞等待本会话启动的 run 结束，改用带 wait 的 job_output：那才是等待工具。GetWorkflowRun 适合不能等待、或 run 属于另一个会话的场景（等待中的 job_output 看不到那些）。
+- `artifacts` 一节列出 run 为用户发布的产物——文件、文档与实时面板，它们已经作为卡片展示给用户。按标题引用某一个；不要把内容粘回来。标记 `primary` 的是交付物：先把用户指向它。
+- 三种终态：`completed`；`errored`（脚本本身失败——不可恢复，请 amend）；`stopped` 带停止原因——`user`（用户主动取消：仅当用户要求时才恢复）、`model`（你自己的 job_kill）、`provider`（provider 侧错误将其停止：`<error>` 块写明原因与修复办法；与用户解决后再恢复）、`interrupted`（拥有该 run 的进程退出——继续它通常正是用户想要的）、`superseded`（一次 AmendWorkflow 取代了它；`<superseded_by>` 指明后继——读那个 run，绝不要恢复这一个）。
+- 已停止的 run（superseded 除外）可用 ResumeWorkflowRun 继续——无需重建，同一 run ID、同一脚本。
+- 任意 run——completed、stopped、errored 或仍在运行——都可以改用 AmendWorkflow 修订：传入其 run ID 与修正后的脚本，已完成的工作会作为缓存导入。脚本本身出错时，这正是该走的路——修脚本、保住已成功的工作，而不是从零重写。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "The workflow run ID."
+    }
+  },
+  "required": [
+    "run_id"
+  ]
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ListModels`
+
+列出此宿主已配置的模型，供动态工作流的 subagent 指定使用。
+
+- 每行的 `id`（`providerId/modelId`）可原样填入 CreateWorkflow 或 AmendWorkflow 的 `subagent_model`。
+- 本工具不会改变你正在运行的模型：会话模型由用户选择、也只有用户能改；`subagent_model` 只影响工作流的 subagent。
+- 会话当前所在的模型标记 `[current]`——选中它等于省略该字段。
+- 标记 `disabled` 的行不可用（无 API 密钥或被策略禁用）；应与用户解决，而不是悄悄绕过。
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ListSavedWorkflows`
+
+列出本项目（`<cwd>/.dsh/workflows/`，以工作目录为键）与全局归档（`~/.dsh/workflows`）中已保存的 dynamic-workflow 定义。这些是可以运行的工作流定义，不是历史 run——run 历史请改用 ListWorkflowRuns。`invalid` 列出无法读取的已保存文件（通常是手改坏的元数据块）。它们被点名是为了修复，而不是被悄悄跳过。
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ListWorkflowRuns`
+
+按最近更新先后列出本项目的 dynamic-workflow run（会话的工作目录即项目键），包含其他会话启动的 run——run 日志按项目而非按会话记录。
+
+本会话启动的 run 会自行结算：你会收到携带最终输出的完成通知。等待期间不要轮询本工具——继续做其他工作。
+
+适用场景：(a) 用户询问工作流进展；(b) 你想回看本项目更早的 run，包括其他会话启动的；(c) 完成通知被截断，你需要按 ID 读取 run 的完整记录。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "description": "Optional status filter.",
+      "enum": [
+        "running",
+        "pending",
+        "completed",
+        "errored",
+        "stopped"
+      ]
+    },
+    "limit": {
+      "type": "integer",
+      "description": "Maximum rows (1-50, default 20)."
+    }
+  }
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ResolveWorkflowQuestion`
+
+回答一个 RUNNING 状态 dynamic-workflow run 内由 subagent 经 escalate 提出的阻塞问题。
+
+- 传入 question_id——escalation 通知里的 ID（形如 `dwfq-...`）。通知丢失时，GetWorkflowRun 会列出该 run 还欠答案的问题。
+- 整个期间 run 都在继续运行：只有提问的 subagent 停在它的调用上，其余 subagent 与脚本控制流照常推进。你的回答逐字成为该调用的结果，subagent 从那里继续。
+- 回答要直接、可执行。不确定时，先用 GetWorkflowRun 查看 run，或用 ask_user_question 问用户，再回来回答——没有任何东西会替你作答，subagent 会无限等待。
+- 问题揭示脚本本身有结构性破坏（坏的门、错误的控制流）时，一句话修不好：取消该 run，改用修订后的脚本走 AmendWorkflow 继续。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "question_id": {
+      "type": "string",
+      "description": "The ID from the escalation notification (it looks like `dwfq-...`)."
+    },
+    "answer": {
+      "type": "string",
+      "description": "The answer; becomes the parked call's result verbatim."
+    }
+  },
+  "required": [
+    "question_id",
+    "answer"
+  ]
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `ResumeWorkflowRun`
+
+恢复状态为 `stopped` 的 dynamic-workflow run——用户取消了它、你用 job_kill 停了它、provider 侧错误停了它（登录过期、套餐无此模型、配额上限）、或拥有它的进程退出了（`interrupted`）。run 在同一 run ID 下继续：已完成步骤从 journal 重放、不耗 token，未完成步骤重新派发。唯一不可恢复的 stopped run 是 `superseded`：它已被一次 AmendWorkflow 取代，后继才是活的 run。
+
+- 传入 run_id——来自 CreateWorkflow 或 AmendWorkflow 的结果、一条完成通知，或 GetWorkflowRun / ListWorkflowRuns。
+- 恢复的 run 在后台运行：完成时你会收到最终输出通知。不要等待或用 job_output 轮询；除非用户让你等，继续做其他工作。
+- `errored` 的 run（脚本本身失败）不可恢复——重放只会同样失败。修好脚本改用 AmendWorkflow 提交。completed 的 run 同样不可恢复；`superseded` 的 run 会被拒绝并给出后继 ID。
+- 停止原因 `user` 表示用户主动停止：仅当用户要求时才恢复；绝不要自作主张恢复用户刚取消的 run。原因 `model` 是你自己的 job_kill。原因 `provider` 表示 provider 侧错误将其停止：先与用户解决原因（停止通知已写明），再恢复。原因 `interrupted`（进程死亡）不同：继续它通常正是用户想要的。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "The workflow run ID to resume."
+    }
+  },
+  "required": [
+    "run_id"
+  ]
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+### `SaveWorkflow`
+
+把 dynamic-workflow 脚本连同其元数据保存下来，之后可以按名称再次运行（CreateWorkflow 的 `saved` 来源；ListSavedWorkflows 列出它们）。必需的 `scope` 决定它存放在本项目还是全局。
+
+绝不要未经请求调用本工具：保存会把文件写进用户仓库，这是用户的决定。当你刚构建的工作流看起来可复用时，用一句话建议保存并等待；用户同意或直接要求时才调用 SaveWorkflow。
+
+先用 `skill` 工具加载 `dynamic-workflows` 技能：它规定已保存定义应包含什么。传 `script`（仅正文）或 `script_path`（草稿文件，保存时不重新产出），绝不同时传。
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The saved workflow name (kebab-case)."
+    },
+    "scope": {
+      "type": "string",
+      "description": "project stores under <cwd>/.dsh/workflows; global under ~/.dsh/workflows.",
+      "enum": [
+        "project",
+        "global"
+      ]
+    },
+    "script": {
+      "type": "string",
+      "description": "The script body."
+    },
+    "script_path": {
+      "type": "string",
+      "description": "A draft file to save without re-emitting its text."
+    },
+    "description": {
+      "type": "string",
+      "description": "One-line description shown by ListSavedWorkflows."
+    },
+    "args": {
+      "description": "Default arguments persisted with the definition."
+    }
+  },
+  "required": [
+    "name",
+    "scope"
+  ]
+}
+```
+
+来源：[`packages/workflow/tool-dynamic-workflow/src/index.ts`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
 
 ## `@deepseek-ai/dsh-tool-bash-persistent`
 

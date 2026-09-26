@@ -111,7 +111,9 @@ Every package below exports a Cordis plugin that a bundle patch can name in a Lo
 | `@deepseek-ai/dsh-client-ui-tool` | no | Client Tool call-tree renderer and keyed per-tool presentation slot |
 | `@deepseek-ai/dsh-client-ui-trajectory` | no | Trajectory event ledger with an interactive timing overview: pure-consumer plugin registering into the conversation ViewMap (no service) |
 | `@deepseek-ai/dsh-client-ui-user-questions` | no | Web ask_user_question composer takeover and plan-review presentation UI |
+| `@deepseek-ai/dsh-client-ui-workflow-artifacts` | no | Workflow artifact preset boards (chart, table, metrics, board) with lenient spec parsing and a degrade card |
 | `@deepseek-ai/dsh-client-ui-workflow-run` | no | Durable workflow-run Conversation Node and nested member disclosure for dsh web |
+| `@deepseek-ai/dsh-client-ui-workflow-run-detail` | no | Workflow run detail side pane: status header, vertical phase spine, results and artifacts, event log, and run actions |
 | `@deepseek-ai/dsh-client-ui-workspace` | no | Workspace picker plugin: one WorkspacePicker registered into the sidebar and empty-state workspace slots |
 
 ## compaction
@@ -493,6 +495,7 @@ Every package below exports a Cordis plugin that a bundle patch can name in a Lo
 
 | Package | Config | Description |
 |---|---|---|
+| `@deepseek-ai/dsh-tool-dynamic-workflow` | yes | 动态工作流的对话工具面：CreateWorkflow/AmendWorkflow/SaveWorkflow/内省/恢复/问答闭环 + actor 侧 escalate/submit_result（ZCode tool/handlers 的移植，spec-conversation-flow 对等清单） |
 | `@deepseek-ai/dsh-tool-ralph` | yes | Model-facing fresh-agent Ralph loop over the workflow and subagent seams |
 | `@deepseek-ai/dsh-tool-workflow` | yes | Model-facing workflow tool: run a JavaScript orchestration script over ctx.workflowEngine |
 | `@deepseek-ai/dsh-workflow-ptc` | yes | Workflow orchestration in the shared sandboxed Node PTC runtime |

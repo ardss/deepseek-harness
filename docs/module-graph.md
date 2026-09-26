@@ -207,7 +207,9 @@ flowchart TD
     pkg_client_ui_tool["client-ui-tool"]
     pkg_client_ui_trajectory["client-ui-trajectory"]
     pkg_client_ui_user_questions["client-ui-user-questions"]
+    pkg_client_ui_workflow_artifacts["client-ui-workflow-artifacts"]
     pkg_client_ui_workflow_run["client-ui-workflow-run"]
+    pkg_client_ui_workflow_run_detail["client-ui-workflow-run-detail"]
     pkg_client_ui_workspace["client-ui-workspace"]
     pkg_client_web["client-web"]
   end
@@ -419,10 +421,14 @@ flowchart TD
     pkg_webhook_github["webhook-github"]
   end
   subgraph group_workflow["packages/workflow"]
+    pkg_tool_dynamic_workflow["tool-dynamic-workflow"]
     pkg_tool_ralph["tool-ralph"]
     pkg_tool_workflow["tool-workflow"]
     pkg_workflow["workflow"]
+    pkg_workflow_expert_core["workflow-expert-core"]
+    pkg_workflow_notifications["workflow-notifications"]
     pkg_workflow_ptc["workflow-ptc"]
+    pkg_workflow_runs["workflow-runs"]
   end
   subgraph group_workspace["packages/workspace"]
     pkg_workspace["workspace"]
@@ -451,6 +457,7 @@ flowchart TD
   pkg_subprocess --> pkg_http_proxy
   pkg_remote_mock --> pkg_typert_protocol
   pkg_typert_loader --> pkg_typert_registry
+  pkg_workflow_notifications --> pkg_workflow_runs
   pkg_session --> pkg_scope
   pkg_system_prompt --> pkg_invariants
   pkg_system_prompt --> pkg_llm
@@ -976,6 +983,15 @@ flowchart TD
   pkg_llm_replay --> pkg_deepseek_llm_api_extensions
   pkg_llm_replay --> pkg_llm
   pkg_llm_replay --> pkg_session
+  pkg_tool_dynamic_workflow --> pkg_agent
+  pkg_tool_dynamic_workflow --> pkg_jobs
+  pkg_tool_dynamic_workflow --> pkg_llm
+  pkg_tool_dynamic_workflow --> pkg_session
+  pkg_tool_dynamic_workflow --> pkg_system_prompt
+  pkg_tool_dynamic_workflow --> pkg_tools
+  pkg_tool_dynamic_workflow --> pkg_util_values
+  pkg_tool_dynamic_workflow --> pkg_workflow_notifications
+  pkg_tool_dynamic_workflow --> pkg_workflow_runs
   pkg_tool_workflow --> pkg_agent
   pkg_tool_workflow --> pkg_invariants
   pkg_tool_workflow --> pkg_jobs
@@ -1447,7 +1463,9 @@ flowchart TD
 | [`client-ui-tool`](../packages/client/ui-tool) | `client` | — |
 | [`client-ui-trajectory`](../packages/client/ui-trajectory) | `client` | — |
 | [`client-ui-user-questions`](../packages/client/ui-user-questions) | `client` | — |
+| [`client-ui-workflow-artifacts`](../packages/client/ui-workflow-artifacts) | `client` | — |
 | [`client-ui-workflow-run`](../packages/client/ui-workflow-run) | `client` | — |
+| [`client-ui-workflow-run-detail`](../packages/client/ui-workflow-run-detail) | `client` | — |
 | [`client-ui-workspace`](../packages/client/ui-workspace) | `client` | — |
 | [`client-web`](../packages/client/web) | `client` | — |
 | [`office-to-pdf`](../packages/document/office-to-pdf) | `document` | — |
@@ -1474,6 +1492,8 @@ flowchart TD
 | [`typert-generator`](../packages/typert/generator) | `typert` | — |
 | [`typert-protocol`](../packages/typert/protocol) | `typert` | — |
 | [`typert-registry`](../packages/typert/registry) | `typert` | — |
+| [`workflow-expert-core`](../packages/workflow/workflow-expert-core) | `workflow` | — |
+| [`workflow-runs`](../packages/workflow/workflow-runs) | `workflow` | — |
 | [`scope`](../packages/core/scope) | `core` | [`invariants`](../packages/runtime-diagnostics/invariants) |
 | [`web`](../packages/web/web) | `web` | [`llm`](../packages/llm/llm) |
 | [`attachment`](../packages/attachment/attachment) | `attachment` | [`brand`](../packages/util/brand) |
@@ -1490,6 +1510,7 @@ flowchart TD
 | [`subprocess`](../packages/subprocess/subprocess) | `subprocess` | [`http-proxy`](../packages/util/http-proxy) |
 | [`remote-mock`](../packages/test-support/remote-mock) | `test-support` | [`typert-protocol`](../packages/typert/protocol) |
 | [`typert-loader`](../packages/typert/loader) | `typert` | [`typert-registry`](../packages/typert/registry) |
+| [`workflow-notifications`](../packages/workflow/workflow-notifications) | `workflow` | [`workflow-runs`](../packages/workflow/workflow-runs) |
 | [`session`](../packages/core/session) | `core` | [`scope`](../packages/core/scope) |
 | [`system-prompt`](../packages/core/system-prompt) | `core` | [`invariants`](../packages/runtime-diagnostics/invariants), [`llm`](../packages/llm/llm), [`scope`](../packages/core/scope) |
 | [`skill`](../packages/skill/skill) | `skill` | [`llm`](../packages/llm/llm), [`scope`](../packages/core/scope) |
@@ -1624,6 +1645,7 @@ flowchart TD
 | [`ssh`](../packages/ssh/ssh) | `ssh` | [`brand`](../packages/util/brand), [`fs`](../packages/fs/fs), [`fs-local`](../packages/fs/fs-local), [`fs-sandbox`](../packages/fs/fs-sandbox), [`sandbox`](../packages/sandbox/sandbox), [`sandbox-local`](../packages/sandbox/sandbox-local), [`sandbox-policy`](../packages/sandbox/sandbox-policy), [`session-projection`](../packages/session/session-projection), [`subprocess`](../packages/subprocess/subprocess), [`subprocess-local`](../packages/subprocess/subprocess-local) |
 | [`tool-terminal`](../packages/terminal/tool-terminal) | `terminal` | [`agent`](../packages/core/agent), [`jobs`](../packages/jobs/jobs), [`llm`](../packages/llm/llm), [`output-retention`](../packages/util/output-retention), [`system-prompt`](../packages/core/system-prompt), [`terminal`](../packages/terminal/terminal), [`tools`](../packages/core/tools) |
 | [`llm-replay`](../packages/test-support/llm-replay) | `test-support` | [`compaction`](../packages/compaction/compaction), [`deepseek-llm-api-extensions`](../packages/llm/deepseek-llm-api-extensions), [`llm`](../packages/llm/llm), [`session`](../packages/core/session) |
+| [`tool-dynamic-workflow`](../packages/workflow/tool-dynamic-workflow) | `workflow` | [`agent`](../packages/core/agent), [`jobs`](../packages/jobs/jobs), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`system-prompt`](../packages/core/system-prompt), [`tools`](../packages/core/tools), [`util-values`](../packages/util/values), [`workflow-notifications`](../packages/workflow/workflow-notifications), [`workflow-runs`](../packages/workflow/workflow-runs) |
 | [`tool-workflow`](../packages/workflow/tool-workflow) | `workflow` | [`agent`](../packages/core/agent), [`invariants`](../packages/runtime-diagnostics/invariants), [`jobs`](../packages/jobs/jobs), [`llm`](../packages/llm/llm), [`session`](../packages/core/session), [`system-prompt`](../packages/core/system-prompt), [`tools`](../packages/core/tools), [`workflow`](../packages/workflow/workflow) |
 | [`plugin-package-inventory-deepseek`](../packages/llm/plugin-package-inventory-deepseek) | `llm` | [`agent`](../packages/core/agent), [`agent-preset-registry`](../packages/preset/agent-preset-registry), [`deepseek-llm-api-extensions`](../packages/llm/deepseek-llm-api-extensions), [`session`](../packages/core/session) |
 | [`token-meter`](../packages/llm/token-meter) | `llm` | [`compaction`](../packages/compaction/compaction), [`compaction-image-offload`](../packages/compaction/compaction-image-offload), [`llm`](../packages/llm/llm), [`llm-retry`](../packages/llm/llm-retry), [`session`](../packages/core/session), [`session-projection`](../packages/session/session-projection) |

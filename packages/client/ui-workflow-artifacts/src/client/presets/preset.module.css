@@ -1,0 +1,133 @@
+.root {
+  width: 100%;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.chartSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chartAxis {
+  stroke: var(--dsh-border-subtle, #d9d9d9);
+  stroke-width: 1;
+}
+
+.chartLine {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.chartBar {
+  fill: var(--dsh-accent, #4c8fd6);
+}
+
+.chartLabel {
+  font-size: 8px;
+  fill: var(--dsh-text-secondary, #888);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--dsh-border-subtle, #ececec);
+  white-space: nowrap;
+}
+
+.table th {
+  font-weight: 600;
+  color: var(--dsh-text-secondary, #666);
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.metricTile {
+  border: 1px solid var(--dsh-border-subtle, #ececec);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.metricValue {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.metricUnit {
+  font-size: 11px;
+  margin-left: 2px;
+  color: var(--dsh-text-secondary, #666);
+}
+
+.metricTitle {
+  font-size: 11px;
+  color: var(--dsh-text-secondary, #666);
+}
+
+.boardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.boardColumn {
+  border: 1px solid var(--dsh-border-subtle, #ececec);
+  border-radius: 6px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.boardColumnTitle {
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--dsh-text-secondary, #666);
+}
+
+.boardCard {
+  border: 1px solid var(--dsh-border-subtle, #ececec);
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: var(--dsh-surface, #fff);
+}
+
+.boardCardTitle {
+  font-weight: 500;
+}
+
+.boardCardDetail {
+  color: var(--dsh-text-secondary, #666);
+  word-break: break-word;
+}
+
+.degrade {
+  border: 1px dashed var(--dsh-border-subtle, #d9d9d9);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--dsh-text-secondary, #666);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.degradeTitle {
+  font-weight: 600;
+}
+
+.empty {
+  color: var(--dsh-text-secondary, #666);
+  padding: 8px 0;
+}

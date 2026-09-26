@@ -3477,6 +3477,25 @@ export interface Config {
 ```
 <!-- END GENERATED config-catalog:@deepseek-ai/dsh-tool-bash-persistent -->
 
+<!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-tool-dynamic-workflow -->
+<a id="deepseek-aidsh-tool-dynamic-workflow"></a>
+
+## `@deepseek-ai/dsh-tool-dynamic-workflow`
+
+- `inject`: `tools` · `systemPrompt`
+- `source`: [`packages/workflow/tool-dynamic-workflow/src/index.ts:38`](../packages/workflow/tool-dynamic-workflow/src/index.ts)
+
+```ts config-catalog
+/** Config:动态工作流工具簇的总开关与提示词段开关。 */
+export interface Config {
+  /** Register the whole tool cluster (default true). */
+  enable?: boolean
+  /** Register the usage prompt section alongside the tools (default true). */
+  enablePromptSection?: boolean
+}
+```
+<!-- END GENERATED config-catalog:@deepseek-ai/dsh-tool-dynamic-workflow -->
+
 <!-- BEGIN GENERATED config-catalog:@deepseek-ai/dsh-tool-fs -->
 <a id="deepseek-aidsh-tool-fs"></a>
 
@@ -4330,7 +4349,9 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 | `@deepseek-ai/dsh-client-ui-tool` | — | [`packages/client/ui-tool/src/index.ts`](../packages/client/ui-tool/src/index.ts) |
 | `@deepseek-ai/dsh-client-ui-trajectory` | — | [`packages/client/ui-trajectory/src/index.ts`](../packages/client/ui-trajectory/src/index.ts) |
 | `@deepseek-ai/dsh-client-ui-user-questions` | — | [`packages/client/ui-user-questions/src/index.ts`](../packages/client/ui-user-questions/src/index.ts) |
+| `@deepseek-ai/dsh-client-ui-workflow-artifacts` | — | [`packages/client/ui-workflow-artifacts/src/index.ts`](../packages/client/ui-workflow-artifacts/src/index.ts) |
 | `@deepseek-ai/dsh-client-ui-workflow-run` | — | [`packages/client/ui-workflow-run/src/index.ts`](../packages/client/ui-workflow-run/src/index.ts) |
+| `@deepseek-ai/dsh-client-ui-workflow-run-detail` | — | [`packages/client/ui-workflow-run-detail/src/index.ts`](../packages/client/ui-workflow-run-detail/src/index.ts) |
 | `@deepseek-ai/dsh-client-ui-workspace` | — | [`packages/client/ui-workspace/src/index.ts`](../packages/client/ui-workspace/src/index.ts) |
 | `@deepseek-ai/dsh-command-compact` | `commands` · `compaction` | [`packages/compaction/command-compact/src/index.ts`](../packages/compaction/command-compact/src/index.ts) |
 | `@deepseek-ai/dsh-command-feedback` | `commands` | [`packages/feedback/command-feedback/src/index.ts`](../packages/feedback/command-feedback/src/index.ts) |
@@ -4464,4 +4485,7 @@ Imported as libraries by other packages; a `cordis.yml` cannot load them.
 | `@deepseek-ai/dsh-util-values` | — | [`packages/util/values/src/index.ts`](../packages/util/values/src/index.ts) |
 | `@deepseek-ai/dsh-util-workspace-path` | — | [`packages/util/workspace-path/src/index.ts`](../packages/util/workspace-path/src/index.ts) |
 | `@deepseek-ai/dsh-win32-process` | — | [`packages/subprocess/win32-process/src/index.ts`](../packages/subprocess/win32-process/src/index.ts) |
+| `@deepseek-ai/dsh-workflow-expert-core` | — | [`packages/workflow/workflow-expert-core/src/index.ts`](../packages/workflow/workflow-expert-core/src/index.ts) |
+| `@deepseek-ai/dsh-workflow-notifications` | — | [`packages/workflow/workflow-notifications/src/index.ts`](../packages/workflow/workflow-notifications/src/index.ts) |
+| `@deepseek-ai/dsh-workflow-runs` | — | [`packages/workflow/workflow-runs/src/index.ts`](../packages/workflow/workflow-runs/src/index.ts) |
 <!-- END GENERATED config-catalog:library -->

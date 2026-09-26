@@ -2094,6 +2094,9 @@ importers:
       '@deepseek-ai/dsh-tool-call-timeout-policy':
         specifier: workspace:*
         version: link:../../guard/timeout-policy
+      '@deepseek-ai/dsh-tool-dynamic-workflow':
+        specifier: workspace:*
+        version: link:../../workflow/tool-dynamic-workflow
       '@deepseek-ai/dsh-tool-fs':
         specifier: workspace:*
         version: link:../../fs/tool-fs
@@ -2539,9 +2542,15 @@ importers:
       '@deepseek-ai/dsh-client-ui-user-questions':
         specifier: workspace:*
         version: link:../../client/ui-user-questions
+      '@deepseek-ai/dsh-client-ui-workflow-artifacts':
+        specifier: workspace:*
+        version: link:../../client/ui-workflow-artifacts
       '@deepseek-ai/dsh-client-ui-workflow-run':
         specifier: workspace:*
         version: link:../../client/ui-workflow-run
+      '@deepseek-ai/dsh-client-ui-workflow-run-detail':
+        specifier: workspace:*
+        version: link:../../client/ui-workflow-run-detail
       '@deepseek-ai/dsh-client-ui-workspace':
         specifier: workspace:*
         version: link:../../client/ui-workspace
@@ -5964,11 +5973,44 @@ importers:
         specifier: ^18.2.0
         version: 18.3.1
 
+  packages/client/ui-workflow-artifacts:
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-client-locale':
+        specifier: workspace:*
+        version: link:../locale
+      '@deepseek-ai/dsh-client-test-runtime':
+        specifier: workspace:*
+        version: link:../../test-support/client-runtime
+      '@deepseek-ai/dsh-client-ui-renderer':
+        specifier: workspace:*
+        version: link:../ui-renderer
+      '@deepseek-ai/dsh-client-ui-slots':
+        specifier: workspace:*
+        version: link:../ui-slots
+      '@deepseek-ai/dsh-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@deepseek-ai/dsh-workflow-runs':
+        specifier: workspace:*
+        version: link:../../workflow/workflow-runs
+      '@types/react':
+        specifier: ~18.3.1
+        version: 18.3.31
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+
   packages/client/ui-workflow-run:
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: workspace:~
         version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-api-job-controller':
+        specifier: workspace:*
+        version: link:../../api/job-controller
       '@deepseek-ai/dsh-api-session-controller':
         specifier: workspace:*
         version: link:../../api/session-controller
@@ -6002,6 +6044,9 @@ importers:
       '@deepseek-ai/dsh-client-ui-workspace':
         specifier: workspace:*
         version: link:../ui-workspace
+      '@deepseek-ai/dsh-jobs':
+        specifier: workspace:*
+        version: link:../../jobs/jobs
       '@deepseek-ai/dsh-session':
         specifier: workspace:*
         version: link:../../core/session
@@ -6011,6 +6056,54 @@ importers:
       '@deepseek-ai/dsh-workflow':
         specifier: workspace:*
         version: link:../../workflow/workflow
+      '@deepseek-ai/dsh-workflow-runs':
+        specifier: workspace:*
+        version: link:../../workflow/workflow-runs
+      '@types/react':
+        specifier: ~18.3.1
+        version: 18.3.31
+      react:
+        specifier: ^18.2.0
+        version: 18.3.1
+
+  packages/client/ui-workflow-run-detail:
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-api-job-controller':
+        specifier: workspace:*
+        version: link:../../api/job-controller
+      '@deepseek-ai/dsh-client-locale':
+        specifier: workspace:*
+        version: link:../locale
+      '@deepseek-ai/dsh-client-test-runtime':
+        specifier: workspace:*
+        version: link:../../test-support/client-runtime
+      '@deepseek-ai/dsh-client-ui-renderer':
+        specifier: workspace:*
+        version: link:../ui-renderer
+      '@deepseek-ai/dsh-client-ui-sidebar-right':
+        specifier: workspace:*
+        version: link:../ui-sidebar-right
+      '@deepseek-ai/dsh-client-ui-slots':
+        specifier: workspace:*
+        version: link:../ui-slots
+      '@deepseek-ai/dsh-client-ui-workflow-artifacts':
+        specifier: workspace:*
+        version: link:../ui-workflow-artifacts
+      '@deepseek-ai/dsh-client-ui-workflow-run':
+        specifier: workspace:*
+        version: link:../ui-workflow-run
+      '@deepseek-ai/dsh-jobs':
+        specifier: workspace:*
+        version: link:../../jobs/jobs
+      '@deepseek-ai/dsh-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@deepseek-ai/dsh-workflow-runs':
+        specifier: workspace:*
+        version: link:../../workflow/workflow-runs
       '@types/react':
         specifier: ~18.3.1
         version: 18.3.31
@@ -13581,6 +13674,49 @@ importers:
         specifier: workspace:*
         version: link:../webhook
 
+  packages/workflow/tool-dynamic-workflow:
+    dependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-agent':
+        specifier: workspace:*
+        version: link:../../core/agent
+      '@deepseek-ai/dsh-jobs':
+        specifier: workspace:*
+        version: link:../../jobs/jobs
+      '@deepseek-ai/dsh-system-prompt':
+        specifier: workspace:*
+        version: link:../../core/system-prompt
+      '@deepseek-ai/dsh-util-values':
+        specifier: workspace:*
+        version: link:../../util/values
+      '@deepseek-ai/dsh-workflow-notifications':
+        specifier: workspace:*
+        version: link:../workflow-notifications
+      '@deepseek-ai/dsh-workflow-runs':
+        specifier: workspace:*
+        version: link:../workflow-runs
+      '@deepseek-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@deepseek-ai/dsh-jobs-local':
+        specifier: workspace:*
+        version: link:../../jobs/jobs-local
+      '@deepseek-ai/dsh-llm':
+        specifier: workspace:*
+        version: link:../../llm/llm
+      '@deepseek-ai/dsh-session':
+        specifier: workspace:*
+        version: link:../../core/session
+      '@deepseek-ai/dsh-tool-jobs':
+        specifier: workspace:*
+        version: link:../../jobs/tool-jobs
+      '@deepseek-ai/dsh-tools':
+        specifier: workspace:*
+        version: link:../../core/tools
+
   packages/workflow/tool-ralph:
     dependencies:
       '@deepseek-ai/schemastery':
@@ -13706,6 +13842,21 @@ importers:
         specifier: workspace:*
         version: link:../../core/session
 
+  packages/workflow/workflow-expert-core:
+    dependencies:
+      '@deepseek-ai/dsh-workflow-runs':
+        specifier: workspace:*
+        version: link:../workflow-runs
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
+  packages/workflow/workflow-notifications:
+    dependencies:
+      '@deepseek-ai/dsh-workflow-runs':
+        specifier: workspace:*
+        version: link:../workflow-runs
+
   packages/workflow/workflow-ptc:
     dependencies:
       '@deepseek-ai/dsh-brand':
@@ -13790,6 +13941,12 @@ importers:
       '@deepseek-ai/dsh-workflow':
         specifier: workspace:*
         version: link:../workflow
+
+  packages/workflow/workflow-runs:
+    dependencies:
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/workspace/workspace:
     dependencies:
@@ -19046,9 +19203,13 @@ packages:
     deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
+  glob@7.2.0:
+    resolution: {integrity: sha512-lmLf6gtyrPq8tTjSmrO94wBeQbFR3HbLHbuyD69wuyQkImp2hWqMGB47OX65FBkPffO641IP9jWa1z4ivqG26Q==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+    deprecated: Glob versions prior to v9 are no longer supported
 
   global-agent@3.0.0:
     resolution: {integrity: sha512-PT6XReJ+D07JvGoxQMkT6qji/jVNfX/h364XHZOWeRzy64sSFr+xJ5OX7LI3b4MPQzdL4H8Y8M0xzPpsVMwA8Q==}
@@ -26467,6 +26628,15 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
+  glob@7.2.0:
+    dependencies:
+      fs.realpath: 1.0.0
+      inflight: 1.0.6
+      inherits: 2.0.4
+      minimatch: 3.1.5
+      once: 1.4.0
+      path-is-absolute: 1.0.1
+
   glob@7.2.3:
     dependencies:
       fs.realpath: 1.0.0
@@ -28202,7 +28372,7 @@ snapshots:
 
   rimraf@2.6.3:
     dependencies:
-      glob: 7.2.3
+      glob: 7.2.0
 
   roarr@2.15.4:
     dependencies:
