@@ -36,7 +36,10 @@ export const inject = ['remote', 'remote.settings']
 export function apply(ctx: Context): void {
   const schema = new SettingsSchemaService(ctx)
   // Every form uses the persistence mode resolved from the connected Host.
-  const persistence = ctx.remote.$host.isLoopback ? 'host' : 'memory'
+  // fork 改动：局域网会话也使用 host 持久化，使设置页在 LAN 下可用。
+  // 安全前提：browser-trust fence（启动令牌 + cookie）已在连接层把关；
+  // 若在不可信网络暴露，请恢复上游的 isLoopback 判定。
+  const persistence = 'host'
   const mirror = new SettingsDescribeMirror(ctx, persistence)
   ctx.effect(() => {
     const disposers = [

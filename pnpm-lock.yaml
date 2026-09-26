@@ -6083,6 +6083,9 @@ importers:
       '@deepseek-ai/dsh-client-ui-renderer':
         specifier: workspace:*
         version: link:../ui-renderer
+      '@deepseek-ai/dsh-client-ui-session':
+        specifier: workspace:*
+        version: link:../ui-session
       '@deepseek-ai/dsh-client-ui-sidebar-right':
         specifier: workspace:*
         version: link:../ui-sidebar-right
@@ -13676,9 +13679,6 @@ importers:
 
   packages/workflow/tool-dynamic-workflow:
     dependencies:
-      '@deepseek-ai/cordis':
-        specifier: workspace:~
-        version: link:../../../vendor/cordis
       '@deepseek-ai/dsh-agent':
         specifier: workspace:*
         version: link:../../core/agent
@@ -13701,6 +13701,9 @@ importers:
         specifier: link:../../../vendor/schemastery
         version: link:../../../vendor/schemastery
     devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
       '@deepseek-ai/dsh-jobs-local':
         specifier: workspace:*
         version: link:../../jobs/jobs-local
@@ -13850,12 +13853,20 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
 
   packages/workflow/workflow-notifications:
     dependencies:
       '@deepseek-ai/dsh-workflow-runs':
         specifier: workspace:*
         version: link:../workflow-runs
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
 
   packages/workflow/workflow-ptc:
     dependencies:
@@ -13947,6 +13958,10 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:~
+        version: link:../../../vendor/cordis
 
   packages/workspace/workspace:
     dependencies:
@@ -14326,6 +14341,9 @@ importers:
       '@deepseek-ai/dsh-tool-cordis':
         specifier: workspace:*
         version: link:../../packages/extensions/tool-cordis
+      '@deepseek-ai/dsh-tool-dynamic-workflow':
+        specifier: workspace:*
+        version: link:../../packages/workflow/tool-dynamic-workflow
       '@deepseek-ai/dsh-tool-fs':
         specifier: workspace:*
         version: link:../../packages/fs/tool-fs
@@ -14413,9 +14431,15 @@ importers:
       '@deepseek-ai/dsh-workflow':
         specifier: workspace:*
         version: link:../../packages/workflow/workflow
+      '@deepseek-ai/dsh-workflow-notifications':
+        specifier: workspace:*
+        version: link:../../packages/workflow/workflow-notifications
       '@deepseek-ai/dsh-workflow-ptc':
         specifier: workspace:*
         version: link:../../packages/workflow/workflow-ptc
+      '@deepseek-ai/dsh-workflow-runs':
+        specifier: workspace:*
+        version: link:../../packages/workflow/workflow-runs
       '@deepseek-ai/schemastery':
         specifier: link:../../vendor/schemastery
         version: link:../../vendor/schemastery
