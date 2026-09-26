@@ -22,6 +22,8 @@ const PROCESS_LAUNCH_TOKENS = new WeakMap<object, string>()
 interface StoredSecretPayload {
   readonly version: typeof STORED_SECRET_VERSION
   readonly secret: string
+  /** fork 补丁：跨重启持久的启动令牌（令牌 URL 因此永不失效）。可选以兼容旧记录。 */
+  readonly launchToken?: string
 }
 
 interface BrowserCookiePayload {
@@ -49,7 +51,8 @@ function decodeBase64Url(value: string): Buffer | undefined {
   return encodeBase64Url(decoded) === value ? decoded : undefined
 }
 
-function processLaunchToken(owner: object): string {
+function processLaunchToken(owner: object, durable: string | undefined): string {
+  if (durable !== undefined) return durable
   const existing = PROCESS_LAUNCH_TOKENS.get(owner)
   if (existing !== undefined) return existing
   const created = encodeBase64Url(randomBytes(SECRET_BYTES))
@@ -158,15 +161,21 @@ function decodeCookie(value: string, secret: Buffer): BrowserCookiePayload | und
   return decoded as unknown as BrowserCookiePayload
 }
 
-async function initializeSecret(credentials: CredentialProvider): Promise<Buffer> {
+async function initializeSecret(credentials: CredentialProvider): Promise<{ secret: Buffer; launchToken: string | undefined }> {
   const generated: StoredSecretPayload = {
     version: STORED_SECRET_VERSION,
     secret: encodeBase64Url(randomBytes(SECRET_BYTES)),
+    launchToken: encodeBase64Url(randomBytes(SECRET_BYTES)),
   }
   const record = await credentials.modifyRecord(AUTH_RECORD_KEY, (current) => {
     if (current !== undefined) {
       storedSecret(current)
-      return Promise.resolve(undefined)
+      // fork 补丁：旧记录缺 launchToken 时补写一枚，已有则原样保留（令牌跨重启稳定）。
+      if (isRecord(current.payload) && typeof current.payload.launchToken === 'string'
+        && current.payload.launchToken.length > 0) {
+        return Promise.resolve(undefined)
+      }
+      return Promise.resolve({ kind: 'grant', payload: generated })
     }
     return Promise.resolve({ kind: 'grant', payload: generated })
   })
@@ -174,7 +183,11 @@ async function initializeSecret(credentials: CredentialProvider): Promise<Buffer
   if (secret === undefined) {
     throw new Error('client-connection: browser-session credential record was not created')
   }
-  return secret
+  const launchToken = isRecord(record.payload) && typeof record.payload.launchToken === 'string'
+    && record.payload.launchToken.length > 0
+    ? record.payload.launchToken
+    : undefined
+  return { secret, launchToken }
 }
 
 /**
@@ -190,8 +203,9 @@ export class BrowserAuth {
     processOwner: object,
     private readonly secret: Buffer,
     maxAgeDays: number,
+    durableLaunchToken: string | undefined,
   ) {
-    this.launchToken = processLaunchToken(processOwner)
+    this.launchToken = processLaunchToken(processOwner, durableLaunchToken)
     this.maxAgeMilliseconds = maxAgeDays * DAY_MILLISECONDS
     if (!Number.isSafeInteger(this.maxAgeMilliseconds)
       || !Number.isSafeInteger(Date.now() + this.maxAgeMilliseconds)) {
@@ -212,7 +226,8 @@ export class BrowserAuth {
     credentials: CredentialProvider,
     maxAgeDays: number,
   ): Promise<BrowserAuth> {
-    return new BrowserAuth(processOwner, await initializeSecret(credentials), maxAgeDays)
+    const { secret, launchToken } = await initializeSecret(credentials)
+    return new BrowserAuth(processOwner, secret, maxAgeDays, launchToken)
   }
 
   /**

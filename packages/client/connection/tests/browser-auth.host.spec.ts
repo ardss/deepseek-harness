@@ -119,25 +119,27 @@ describe('BrowserAuth', () => {
     expect(reloaded.authenticatedUrl('http://127.0.0.1:3080')).toBe(login.launchUrl)
     expect(reloaded.isAuthenticated(request('/', '127.0.0.1:3080', { cookie: login.cookie }))).toBe(true)
 
+    // fork 补丁语义：启动令牌跨重启持久（credentials 存储），书签/旧链接永不失效。
     const restarted = await createAuth(store)
     expect(new URL(restarted.authenticatedUrl('http://127.0.0.1:3080')).searchParams.get('token'))
-      .not.toBe(new URL(login.launchUrl).searchParams.get('token'))
+      .toBe(new URL(login.launchUrl).searchParams.get('token'))
     expect(restarted.isAuthenticated(request('/', '127.0.0.1:3080', { cookie: login.cookie }))).toBe(true)
-    const staleUrl = new URL(login.launchUrl)
+    const sameTokenUrl = new URL(login.launchUrl)
     const redirected = response()
+    // 同一枚持久令牌在重启后仍可换发 cookie（303 → ./）。
     expect(restarted.authorizeIndex(request(
-      `${staleUrl.pathname}${staleUrl.search}`,
+      `${sameTokenUrl.pathname}${sameTokenUrl.search}`,
       '127.0.0.1:3080',
       { cookie: login.cookie },
     ), redirected.value)).toBe(false)
-    expect(redirected.state).toEqual({
-      status: 303,
-      headers: {
-        'cache-control': 'no-store',
-        'location': './',
-        'referrer-policy': 'no-referrer',
-      },
+    expect(redirected.state.status).toBe(303)
+    expect(redirected.state.headers).toMatchObject({
+      'cache-control': 'no-store',
+      'location': './',
+      'referrer-policy': 'no-referrer',
     })
+    // 持久令牌路径会再铸一枚新 cookie（Max-Age 30 天）。
+    expect(redirected.state.headers?.['set-cookie']).toMatch(/; Max-Age=2592000; Path=\//u)
   })
 
   it('preserves the caller authority and mount while adding only this process token', async () => {
