@@ -19,6 +19,8 @@ export interface TurnProcessSpec {
 
 const TURN_PROCESS_INDEPENDENT_KIND_LIST = [
   'system-prompt',
+  'journal-workflow-run',
+  'expert-workflow-run',
   'user',
   'steering',
   'turn-trigger',
