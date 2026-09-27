@@ -1,0 +1,19 @@
+/* ZCode 侧设计令牌（--dsh-*）到本应用令牌（--dsw-*）的映射层。
+ * 从 ZCode 迁移的客户端面板（workflow-run、approval、presets、deliverables…）
+ * 的样式全部写作 `var(--dsh-xxx, <浅色兜底>)`：ZCode 桌面端全局定义这些令牌，
+ * 而 fork 此前从未定义——于是深浅两态都走死兜底值，深色模式下移植面板全是白底
+ * 贴深底，且观感与本应用脱节。这里把用到的语义令牌接到 --dsw-alias-* 上，
+ * 令牌本体随 design-platform.css 的 body[data-ds-dark-theme] 自动换挡。 */
+body {
+  --dsh-surface: var(--dsw-alias-bg-layer-1);
+  --dsh-surface-muted: var(--dsw-alias-bg-layer-2);
+  --dsh-border-subtle: var(--dsw-alias-border-l2);
+  --dsh-text-primary: var(--dsw-alias-label-primary);
+  --dsh-text-secondary: var(--dsw-alias-label-secondary);
+  --dsh-accent: var(--dsw-alias-brand-primary);
+  --dsh-danger-text: var(--dsw-alias-state-error-primary);
+  --dsh-danger-surface: var(--dsw-alias-interactive-bg-hover-danger);
+  --dsh-warning-text: var(--dsw-alias-state-warn-label);
+  --dsh-warning-surface: var(--dsw-alias-state-warn-secondary);
+  --dsh-warning-border: var(--dsw-alias-state-warn-primary);
+}
