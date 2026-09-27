@@ -28,7 +28,7 @@ const TURN_PROCESS_INDEPENDENT_KIND_LIST = [
   'turn-error',
   'turn-max-tokens',
   'turn-tail',
-] as const satisfies readonly ChatNode['kind'][]
+] as const satisfies readonly (ChatNode['kind'] | 'journal-workflow-run' | 'expert-workflow-run')[]
 
 /** Chat Node kinds that remain independent of a Turn's process disclosure. */
 export const TURN_PROCESS_INDEPENDENT_KINDS: ReadonlySet<string> = new Set(
