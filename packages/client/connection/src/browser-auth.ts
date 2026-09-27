@@ -87,8 +87,12 @@ function canonicalSecret(value: unknown): Buffer | undefined {
   return decoded
 }
 
-function storedSecret(record: CredentialRecord | undefined): Buffer | undefined {
-  if (record === undefined) return undefined
+/** fork 补丁：窄化 GrantRecord 载荷（seam 契约只保证 JSON 值，launchToken 读取前先窄化）。 */
+function grantPayload(record: CredentialRecord): Record<string, unknown> {
+  return record.kind === 'grant' && isRecord(record.payload) ? record.payload : {}
+}
+
+function storedSecret(record: CredentialRecord | undefined): Buffer | undefined {  if (record === undefined) return undefined
   if (record.kind !== 'grant' || !isRecord(record.payload)
     || record.payload.version !== STORED_SECRET_VERSION) {
     throw new Error('client-connection: browser-session credential record has an unsupported format')
@@ -171,8 +175,8 @@ async function initializeSecret(credentials: CredentialProvider): Promise<{ secr
     if (current !== undefined) {
       storedSecret(current)
       // fork 补丁：旧记录缺 launchToken 时补写一枚，已有则原样保留（令牌跨重启稳定）。
-      if (isRecord(current.payload) && typeof current.payload.launchToken === 'string'
-        && current.payload.launchToken.length > 0) {
+      const payload = grantPayload(current)
+      if (typeof payload.launchToken === 'string' && payload.launchToken.length > 0) {
         return Promise.resolve(undefined)
       }
       return Promise.resolve({ kind: 'grant', payload: generated })
@@ -183,9 +187,9 @@ async function initializeSecret(credentials: CredentialProvider): Promise<{ secr
   if (secret === undefined) {
     throw new Error('client-connection: browser-session credential record was not created')
   }
-  const launchToken = isRecord(record.payload) && typeof record.payload.launchToken === 'string'
-    && record.payload.launchToken.length > 0
-    ? record.payload.launchToken
+  const payload = record === undefined ? {} : grantPayload(record)
+  const launchToken = typeof payload.launchToken === 'string' && payload.launchToken.length > 0
+    ? payload.launchToken
     : undefined
   return { secret, launchToken }
 }
